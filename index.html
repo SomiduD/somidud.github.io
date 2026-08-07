@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Somidu Dilankara – Full-Stack Software Engineer, IoT Architect, and Computer Science Scholar from Gampaha, Sri Lanka.">
+    <meta name="keywords" content="Somidu Dilankara, portfolio, flutter developer, computer science, Sri Lanka, full stack, IoT, Java, React, Docker, R">
+    <title>Somidu Dilankara | Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="loading" data-audio-state="paused">
+
+<!-- STARTUP OVERLAY -->
+<div id="startup-overlay">
+    <div id="startup-text">Hello 👋</div>
+</div>
+
+<!-- BACKGROUND AUDIO -->
+<audio id="welcome-audio" loop>
+    <source src="welcome.mp3" type="audio/mpeg">
+</audio>
+
+<!-- NAVIGATION -->
+<nav id="nav" role="navigation" aria-label="Main navigation">
+    <div class="nav-inner">
+        <div class="nav-logo" id="nav-logo">
+            <div class="nav-logo-dot" id="nav-logo-dot"></div>
+            <span>Somidu Dilankara</span>
+        </div>
+        <ul class="nav-links" role="list">
+            <li><a href="#hero" class="nav-link">Home</a></li>
+            <li><a href="#about" class="nav-link">About</a></li>
+            <li><a href="#skills" class="nav-link">Skills</a></li>
+            <li><a href="#deployments" class="nav-link">Deployments</a></li>
+            <li><a href="#contact" class="nav-link">Contact</a></li>
+            <li><a href="tools.html" class="nav-tools-link">🔧 Tools</a></li>
+        </ul>
+        <div class="nav-controls">
+            <button class="nav-btn" id="music-btn" aria-label="Toggle Background Music">
+                <svg class="icon-music-paused" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                <svg class="icon-music-playing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+            <button class="nav-btn" id="theme-btn" aria-label="Toggle Light/Dark Mode">
+                <svg class="icon-sun" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </button>
+            <div id="admin-badge" role="status" title="Admin mode active">
+                <span class="admin-badge-dot"></span>ADMIN
+            </div>
+            <button id="admin-logout-btn" onclick="adminLogout()" title="Logout">⎋ Logout</button>
+            <button class="hamburger" id="hamburger-btn" aria-label="Open mobile menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- MOBILE NAV -->
+<div id="mobile-nav" role="navigation" aria-label="Mobile navigation">
+    <a href="#hero">🏠 Home</a>
+    <a href="#about">👤 About</a>
+    <a href="#skills">⚡ Skills</a>
+    <a href="#deployments">🚀 Deployments</a>
+    <a href="#contact">✉️ Contact</a>
+    <a href="tools.html">🔧 Tools</a>
+</div>
+
+<!-- MAIN -->
+<main>
+
+<!-- HERO SECTION -->
+<section id="hero">
+    <canvas id="hero-canvas"></canvas>
+    <div class="hero-inner">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <div class="hero-badge-dot"></div>
+                <span>Available for Internships &amp; Roles</span>
+            </div>
+            <h1 class="hero-name">Somidu Dilankara</h1>
+            <div class="hero-typewriter">
+                <span id="typewriter-text"></span><span class="typewriter-cursor"></span>
+            </div>
+            <p class="hero-bio">
+                Specializing in crafting elegant, scalable digital architectures — from native mobile ecosystems and full-stack web engines to autonomous embedded hardware prototypes. Driven by a passion for integrating complex database management, intelligent IoT automations, and premium UI/UX design. Based in Gampaha, Sri Lanka.
+            </p>
+            <div class="hero-actions">
+                <a href="https://linkedin.com/in/somidu-dilankara-aaa819242" target="_blank" class="btn btn-primary hero-social-btn">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+                    LinkedIn
+                </a>
+                <a href="https://github.com/somidud" target="_blank" class="btn btn-ghost hero-social-btn">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                    GitHub
+                </a>
+                <button class="btn btn-outline hero-social-btn" onclick="openCvModal()">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                    Download CV
+                </button>
+                <a href="https://facebook.com/share/1LGZ6LKfCR/" target="_blank" class="btn btn-ghost hero-social-btn">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                    Facebook
+                </a>
+            </div>
+        </div>
+        <div class="hero-photo">
+            <div class="hero-photo-ring">
+                <div class="hero-photo-inner">
+                    <img src="SomiduD.jpeg" alt="Somidu Dilankara" onerror="this.style.display='none'">
+                </div>
+            </div>
+            <div class="hero-photo-glow"></div>
+        </div>
+    </div>
+    <div class="hero-scroll" aria-hidden="true">
+        <span>scroll</span>
+        <div class="hero-scroll-arrow"></div>
+    </div>
+</section>
+
+<!-- ABOUT SECTION -->
+<section id="about" class="section">
+    <div class="container">
+        <div class="section-header reveal">
+            <p class="section-label">Biography</p>
+            <h2 class="section-title">The Engineering Mindset</h2>
+        </div>
+        <div class="about-grid">
+            <div class="about-card reveal reveal-delay-1">
+                <div class="about-stats">
+                    <div class="stat-item">
+                        <div class="stat-num">5+</div>
+                        <div class="stat-label">Deployments</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-num">18+</div>
+                        <div class="stat-label">Competencies</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-num">3+</div>
+                        <div class="stat-label">Years Coding</div>
+                    </div>
+                </div>
+                <p class="about-bio-text">
+                    Computer Science Scholar at NSBM Green University, specializing in full-stack mobile &amp; web applications, IoT embedded systems, and relational database architecture. Passionate about bridging physical hardware with scalable digital intelligence.
+                </p>
+                <div class="about-contact-row">
+                    <div class="about-contact-item"><span>📍</span><span>Gampaha, Sri Lanka</span></div>
+                    <div class="about-contact-item"><span>🎓</span><span>NSBM Green University</span></div>
+                    <div class="about-contact-item"><span>💼</span><span>Open for Roles &amp; Freelance</span></div>
+                    <div class="about-contact-item"><span>📧</span><a href="mailto:somidudilan2001@gmail.com" style="color:inherit">somidudilan2001@gmail.com</a></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:0.6rem;margin-top:0.5rem">
+                    <a href="resume.pdf" download class="btn btn-ghost" style="justify-content:center;">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                        Download Static CV
+                    </a>
+                    <button class="btn btn-primary" onclick="openCvModal()" style="justify-content:center;">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        ✨ Generate Custom AI CV
+                    </button>
+                </div>
+            </div>
+            <!-- TIMELINE -->
+            <div class="reveal reveal-delay-2">
+                <h3 style="font-size:1rem;font-weight:700;margin-bottom:1.25rem;color:var(--text-secondary);font-family:var(--font-mono);">// Academic Timeline</h3>
+                <div class="edu-wrapper" id="edu-wrapper">
+                    <!-- Dynamically populated from master_cv_data.json -->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SKILLS SECTION -->
+<section id="skills" class="section">
+    <div class="container">
+        <div class="section-header reveal">
+            <p class="section-label">Tech Stack</p>
+            <h2 class="section-title">Tools &amp; Technologies</h2>
+            <p class="section-subtitle">Technologies I work with day-to-day</p>
+        </div>
+        <div class="stack-categories" id="skills-container">
+            <!-- Dynamically rendered -->
+        </div>
+    </div>
+</section>
+
+<!-- DEPLOYMENTS SECTION -->
+<section id="deployments" class="section">
+    <div class="container">
+        <div class="projects-header">
+            <div class="section-header reveal" style="margin-bottom:0">
+                <p class="section-label">Deployments</p>
+                <h2 class="section-title">Selected Projects</h2>
+                <p class="section-subtitle" id="pinned-subtitle">6 pinned from my project library</p>
+            </div>
+            <div id="admin-deploy-toolbar">
+                <button class="btn btn-outline btn-sm" onclick="openDeploymentsModal()">⚙️ Manage Pins</button>
+                <button class="btn btn-primary btn-sm" onclick="openAddProject()">+ Add Project</button>
+            </div>
+        </div>
+        <div class="admin-info-bar">
+            <span class="admin-info-bar-dot"></span>
+            Admin Console Active — You can pin, unpin, add and delete deployments.
+        </div>
+        <div class="projects-grid" id="pinned-projects-grid"></div>
+    </div>
+</section>
+
+<!-- CONTACT SECTION -->
+<section id="contact" class="section">
+    <div class="container">
+        <div class="section-header reveal">
+            <p class="section-label">Contact</p>
+            <h2 class="section-title">Let's Build Something Together</h2>
+        </div>
+        <div class="contact-grid">
+            <div class="contact-info reveal reveal-delay-1">
+                <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem">Get in Touch ✦</h3>
+                <p style="color:var(--text-secondary);font-size:0.95rem;margin-bottom:1.5rem;font-weight:300">Have an interesting project or a technical problem to solve? Drop me a message and I'll get back to you as soon as possible.</p>
+                <div class="contact-item">
+                    <div class="contact-icon">📍</div>
+                    <div class="contact-item-body"><h4>Location</h4><p>Gampaha, Sri Lanka</p></div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">📧</div>
+                    <div class="contact-item-body"><h4>Email</h4><p>somidudilan2001@gmail.com</p></div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">💼</div>
+                    <div class="contact-item-body"><h4>Availability</h4><p>Open for Roles &amp; Freelance Projects</p></div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">⚡</div>
+                    <div class="contact-item-body"><h4>Response</h4><p>Response within 24 hours</p></div>
+                </div>
+            </div>
+            <form id="portfolio-form" action="https://formspree.io/f/mqakpgyy" method="POST" class="contact-form reveal reveal-delay-2">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="form-name">👤 Full Name *</label>
+                        <input type="text" id="form-name" name="name" placeholder="Your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="form-email">✉️ Email *</label>
+                        <input type="email" id="form-email" name="email" placeholder="name@example.com" required>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:1.25rem">
+                    <label for="form-phone">📱 Telephone</label>
+                    <input type="tel" id="form-phone" name="phone" placeholder="+94 XX XXX XXXX">
+                </div>
+                <div class="form-group" style="margin-bottom:1.25rem">
+                    <label for="form-inquiry">💬 Inquiry Type</label>
+                    <select id="form-inquiry" name="inquiry" style="width:100%;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:0.8rem 1rem;color:var(--text-primary);font-size:0.95rem;outline:none;">
+                        <option>Full-Stack Project Development 🧑‍💻</option>
+                        <option>Mobile App Development 📱</option>
+                        <option>IoT / Embedded Systems 📡</option>
+                        <option>Internship / Job Offer 💼</option>
+                        <option>Freelance Collaboration 🤝</option>
+                        <option>Other Inquiry 💬</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:1.5rem">
+                    <label for="form-message">💡 Message *</label>
+                    <textarea id="form-message" name="message" rows="4" placeholder="Describe your project or inquiry..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" id="submit-btn" style="width:100%;justify-content:center;font-size:1rem;">
+                    ➤ Send Message
+                </button>
+                <div id="success-overlay">
+                    <div class="success-icon">✓</div>
+                    <div class="success-title">Message Sent!</div>
+                    <p class="success-text">Thanks for reaching out. I'll get back to you within 24 hours.</p>
+                    <button type="button" onclick="resetForm()" class="btn btn-ghost btn-sm">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+</main>
+
+<!-- FOOTER -->
+<footer>
+    <div class="container">
+        <p>© 2026 Somidu Dilankara — Built with ❤️ &amp; lots of ☕</p>
+        <div class="footer-tip">
+            <span class="footer-key">Ctrl</span> + <span class="footer-key">`</span> — New Terminal &nbsp;|&nbsp;
+            <span class="footer-key">Ctrl</span>+<span class="footer-key">Shift</span>+<span class="footer-key">A</span> — Admin Login Tip
+        </div>
+    </div>
+</footer>
+
+<!-- ============================================================
+     CHATBOT CHARACTER — Hermione Granger Animated Avatar
+============================================================ -->
+<div id="chat-char-widget" onclick="toggleChat()" aria-label="Open Hermione AI Assistant" role="button" tabindex="0" title="Chat with Hermione — AI Assistant">
+    <!-- Speech bubble -->
+    <div id="char-speech-bubble" class="char-speech-bubble">
+        <span id="char-bubble-text">Hi! Ask me anything 👋</span>
+    </div>
+    <!-- Full-body Hermione avatar (SVG with embedded animations) -->
+    <div class="char-body-wrap">
+        <div class="char-status-ring"></div>
+        <!-- Use <object> so the SVG's internal CSS animations run -->
+        <object id="char-svg-obj" type="image/svg+xml" data="hermione_avatar.svg"
+                aria-label="Hermione AI Assistant Character"
+                style="width:100%;height:100%;pointer-events:none;">
+            <!-- Inline fallback if object fails -->
+            <img src="hermione_avatar.svg" alt="Hermione" style="width:100%;height:100%;object-fit:contain;object-position:bottom;">
+        </object>
+    </div>
+    <div class="char-pulse-ring"></div>
+</div>
+
+<!-- Chatbot Panel -->
+<div id="chat-panel" role="dialog" aria-label="Hermione AI Assistant">
+    <div class="chat-header">
+        <div class="chat-avatar-container" style="overflow:visible;width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#3a1a55,#1a1030);border:2px solid rgba(0,245,255,0.3);flex-shrink:0;">
+            <!-- Hermione portrait bust - inline SVG -->
+            <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" width="48" height="48" style="border-radius:50%">
+                <defs>
+                    <radialGradient id="cpSkin" cx="45%" cy="38%" r="60%">
+                        <stop offset="0%" stop-color="#fde8cc"/>
+                        <stop offset="100%" stop-color="#e8c8a0"/>
+                    </radialGradient>
+                    <clipPath id="cpCircle"><circle cx="30" cy="30" r="30"/></clipPath>
+                </defs>
+                <g clip-path="url(#cpCircle)">
+                    <!-- Background -->
+                    <rect x="0" y="0" width="60" height="60" fill="#1a1030"/>
+                    <!-- Robe/shoulders -->
+                    <path d="M 5 55 Q 8 40 20 38 Q 30 36 40 38 Q 52 40 55 55 Z" fill="#141416"/>
+                    <!-- White shirt collar -->
+                    <path d="M 22 38 L 20 44 L 30 42 Z" fill="#f0f0f5"/>
+                    <path d="M 38 38 L 40 44 L 30 42 Z" fill="#f0f0f5"/>
+                    <!-- Tie hint -->
+                    <path d="M 28 40 L 27.5 50 L 30 53 L 32.5 50 L 32 40 Z" fill="#8b0000"/>
+                    <line x1="28" y1="43" x2="32" y2="41" stroke="#d4a017" stroke-width="1.5"/>
+                    <line x1="27.8" y1="46.5" x2="32" y2="44.5" stroke="#d4a017" stroke-width="1.5"/>
+                    <!-- Cardigan V neck -->
+                    <path d="M 18 38 Q 20 48 30 50 Q 40 48 42 38 Z" fill="#2a2a30" opacity="0.6"/>
+                    <!-- Bushy hair back -->
+                    <ellipse cx="12" cy="26" rx="10" ry="16" fill="#b07008" opacity="0.85"/>
+                    <ellipse cx="48" cy="26" rx="10" ry="16" fill="#b07008" opacity="0.85"/>
+                    <path d="M 14 18 Q 18 4 30 2 Q 42 4 46 18 Q 38 8 30 7 Q 22 8 14 18 Z" fill="#8a5506"/>
+                    <path d="M 15 22 Q 19 6 30 4 Q 41 6 45 22 Q 38 10 30 9 Q 22 10 15 22 Z" fill="#c8860a"/>
+                    <!-- Neck -->
+                    <rect x="25" y="33" width="10" height="8" rx="3" fill="url(#cpSkin)"/>
+                    <!-- Head / face -->
+                    <ellipse cx="30" cy="23" rx="16" ry="18" fill="url(#cpSkin)"/>
+                    <!-- Hair front/bangs over forehead -->
+                    <path d="M 16 20 Q 18 10 30 8 Q 42 10 44 20 Q 36 14 30 13 Q 24 14 16 20 Z" fill="#b07010"/>
+                    <!-- Eyebrows -->
+                    <path d="M 19 19 Q 23 17 26 19" stroke="#7a4808" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                    <path d="M 34 19 Q 37 17 41 19" stroke="#7a4808" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                    <!-- Left eye -->
+                    <ellipse cx="23" cy="23" rx="4.5" ry="4" fill="white"/>
+                    <circle cx="23" cy="23" r="2.8" fill="#3a1800"/>
+                    <circle cx="23" cy="23" r="1.5" fill="#0a0500"/>
+                    <circle cx="24" cy="21.8" r="1" fill="white"/>
+                    <!-- Right eye -->
+                    <ellipse cx="37" cy="23" rx="4.5" ry="4" fill="white"/>
+                    <circle cx="37" cy="23" r="2.8" fill="#3a1800"/>
+                    <circle cx="37" cy="23" r="1.5" fill="#0a0500"/>
+                    <circle cx="38" cy="21.8" r="1" fill="white"/>
+                    <!-- Nose -->
+                    <path d="M 28.5 27 Q 30 30 31.5 27" stroke="#d0a080" stroke-width="0.8" fill="none"/>
+                    <!-- Smile -->
+                    <path d="M 25 33 Q 30 37 35 33" stroke="#b07060" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                    <!-- Side hair strands -->
+                    <path d="M 15 25 Q 12 32 14 39" stroke="#c8860a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <path d="M 45 25 Q 48 32 46 39" stroke="#c8860a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                </g>
+                <!-- Online status dot -->
+                <circle cx="46" cy="46" r="6" fill="#00ff88" stroke="#1a1030" stroke-width="2"/>
+            </svg>
+        </div>
+
+        <div class="chat-header-info">
+            <div class="chat-name">Hermione</div>
+            <div class="chat-status">
+                <span class="chat-status-dot"></span>
+                Personal AI Assistant
+            </div>
+        </div>
+        <button class="chat-close" onclick="toggleChat()">✕</button>
+    </div>
+    <div id="chat-messages">
+        <div class="msg assistant">
+            <div class="msg-bubble">Hello! 👋 I'm <strong>Hermione</strong>, Somidu Dilankara's personal AI assistant. I can tell you about his skills, education, projects, and how to get in touch. What would you like to know?</div>
+        </div>
+    </div>
+    <div class="chat-disclaimer">Contextual AI — powered by Somidu's background data</div>
+    <div class="chat-input-area">
+        <textarea id="chat-input" placeholder="Ask about skills, projects..." rows="1"></textarea>
+        <button id="chat-send" onclick="sendChatMessage()">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+        </button>
+    </div>
+</div>
+
+<!-- TERMINAL -->
+<div id="terminal-panel">
+    <div class="term-titlebar">
+        <div class="term-titlebar-left">
+            <div class="term-dot red"></div>
+            <div class="term-dot yellow"></div>
+            <div class="term-dot green"></div>
+            <span class="term-title">somidu@portfolio ~ bash</span>
+        </div>
+        <button class="term-close" onclick="toggleTerminal()">✕</button>
+    </div>
+    <div id="term-output">
+        <div class="term-line"><span class="term-success-color">Welcome to Somidu's portfolio terminal.</span></div>
+        <div class="term-line"><span class="term-output-color">Type <span class="term-prompt-color">help</span> for available commands.</span></div>
+    </div>
+    <div class="term-input-line">
+        <span class="term-prompt-color">somidu@portfolio:~$&nbsp;</span>
+        <input type="text" id="term-input" autocomplete="off">
+    </div>
+</div>
+
+<!-- ADMIN LOGIN MODAL -->
+<div id="admin-login-overlay">
+    <div id="admin-login-box">
+        <div class="admin-login-header">
+            <div class="admin-login-icon">🔐</div>
+            <div class="admin-login-title">Admin Access</div>
+            <div class="admin-login-subtitle">// Restricted — Authorisation Personnel Only</div>
+        </div>
+        <div class="admin-input-group">
+            <div class="admin-input-label">🔑 Password</div>
+            <input type="password" id="admin-password-input" placeholder="Enter admin password">
+            <span id="admin-pw-toggle" onclick="toggleAdminPwVisibility()">👁</span>
+        </div>
+        <div class="admin-error-msg" id="admin-error-msg">⚠️ No more keys to success — Power to admin</div>
+        <button class="admin-login-submit" id="admin-login-btn" onclick="attemptAdminLogin()">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            Authenticate
+        </button>
+        <div class="admin-login-cancel" onclick="closeAdminLogin()">Cancel — Return to Public View</div>
+        <div class="admin-login-hint">no more keys to success | Power to admin</div>
+    </div>
+</div>
+
+<!-- MANAGE DEPLOYMENTS MODAL -->
+<div id="modal-overlay">
+    <div id="modal-box">
+        <div class="modal-header">
+            <span class="modal-title">⚙️ Manage Deployments</span>
+            <div style="display:flex;align-items:center;gap:0.75rem">
+                <span id="pin-counter" style="font-family:var(--font-mono);font-size:0.78rem;color:var(--text-muted)">0 / 6 pinned</span>
+                <button class="modal-close" onclick="closeDeploymentsModal()">✕</button>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="modal-grid" id="all-projects-modal"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ADD PROJECT MODAL -->
+<div id="add-project-overlay">
+    <div id="add-project-box">
+        <div class="add-proj-header">
+            <span class="add-proj-title">🚀 New Deployment</span>
+            <button class="add-proj-close" onclick="closeAddProject()">✕</button>
+        </div>
+        <div class="add-proj-body">
+            <div class="form-group" style="margin-bottom:1rem"><label>Title *</label><input type="text" id="ap-title" placeholder="Project name"></div>
+            <div class="form-group" style="margin-bottom:1rem"><label>Category *</label><input type="text" id="ap-category" placeholder="e.g. Mobile App • Flutter"></div>
+            <div class="form-group" style="margin-bottom:1rem"><label>Description *</label><textarea id="ap-description" rows="3" placeholder="Describe your project..."></textarea></div>
+            <div class="form-group" style="margin-bottom:1rem"><label>Tags (comma separated)</label><input type="text" id="ap-tags" placeholder="Flutter, Firebase, Dart"></div>
+            <div class="form-group" style="margin-bottom:1rem"><label>YouTube Embed URL</label><input type="url" id="ap-youtube" placeholder="https://www.youtube.com/embed/..."></div>
+            <div class="form-group" style="margin-bottom:1rem"><label>GitHub URL</label><input type="url" id="ap-github" placeholder="https://github.com/..."></div>
+            <div class="form-group" style="margin-bottom:1rem"><label>Live Demo URL</label><input type="url" id="ap-live" placeholder="https://..."></div>
+            <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:var(--text-secondary);cursor:pointer">
+                <input type="checkbox" id="ap-pin" checked style="accent-color:var(--accent)"> Pin to featured deployments
+            </label>
+        </div>
+        <div class="add-proj-footer">
+            <button onclick="closeAddProject()" class="btn btn-ghost btn-sm">Cancel</button>
+            <button onclick="submitNewProject()" class="btn btn-primary btn-sm">🚀 Deploy Project</button>
+        </div>
+    </div>
+</div>
+
+<!-- CV GENERATOR MODAL -->
+<div id="cv-modal-overlay">
+    <div id="cv-modal-box">
+        <div class="modal-header">
+            <span class="modal-title">✨ AI CV Generator</span>
+            <button class="modal-close" onclick="closeCvModal()">✕</button>
+        </div>
+        <div style="padding:2rem">
+            <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1.5rem">Enter the role or position you're applying for. The AI will tailor your CV accordingly.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.25rem">
+                <button class="cv-chip" onclick="selectChip(this,'Flutter Mobile Developer')">📱 Mobile Dev</button>
+                <button class="cv-chip" onclick="selectChip(this,'Full-Stack Web Developer')">🌐 Full-Stack</button>
+                <button class="cv-chip" onclick="selectChip(this,'IoT Systems Engineer')">📡 IoT Engineer</button>
+                <button class="cv-chip" onclick="selectChip(this,'React Frontend Developer')">⚛️ React Dev</button>
+                <button class="cv-chip" onclick="selectChip(this,'Software Internship')">💼 Internship</button>
+                <button class="cv-chip" onclick="selectChip(this,'Java Backend Developer')">☕ Java Dev</button>
+            </div>
+            <div class="form-group" style="margin-bottom:1.25rem">
+                <label style="font-family:var(--font-mono);font-size:0.78rem;color:var(--text-secondary);margin-bottom:0.4rem;display:block">OR TYPE CUSTOM ROLE</label>
+                <input type="text" id="cv-role-input" placeholder="e.g. Junior Software Engineer at Google" style="width:100%;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:0.8rem 1rem;color:var(--text-primary);font-size:0.95rem;outline:none;transition:border-color 0.2s">
+            </div>
+            <div id="cv-progress-bar" style="height:3px;background:var(--border);border-radius:2px;margin-bottom:0.75rem;overflow:hidden;display:none">
+                <div id="cv-progress-fill" style="height:100%;background:var(--accent-gradient);width:0%;transition:width 0.4s ease;border-radius:2px"></div>
+            </div>
+            <p id="cv-status" style="font-family:var(--font-mono);font-size:0.78rem;color:var(--accent);min-height:1.2em;margin-bottom:1.25rem"></p>
+            <button class="btn btn-primary" id="cv-gen-btn" onclick="generateCV()" style="width:100%;justify-content:center;margin-bottom:1rem">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                Generate &amp; Download PDF
+            </button>
+            <div id="cv-download-zone" style="display:none;flex-direction:column;gap:0.75rem">
+                <div style="background:rgba(0,245,255,0.06);border:1px solid var(--border-bright);border-radius:var(--radius);padding:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem">
+                    <div>
+                        <div style="font-weight:700;font-size:0.9rem">CV Ready! 🎉</div>
+                        <div id="cv-download-label" style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted)">Optimized for your role</div>
+                    </div>
+                    <button class="btn btn-primary btn-sm" id="cv-download-btn" onclick="downloadGeneratedCV()">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                        Download PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT PROJECT MODAL -->
+<div id="edit-project-overlay">
+    <div id="edit-project-box">
+        <div class="add-proj-header">
+            <span class="add-proj-title">✏️ Edit Deployment</span>
+            <button class="add-proj-close" onclick="closeEditProject()">✕</button>
+        </div>
+        <div class="add-proj-body">
+            <input type="hidden" id="ep-id">
+            <div class="form-group" style="margin-bottom:1rem"><label>Title *</label><input type="text" id="ep-title" placeholder="Project name"></div>
+            <div class="form-group" style="margin-bottom:1rem"><label>Category *</label><input type="text" id="ep-category" placeholder="e.g. Mobile App • Flutter"></div>
+            <div class="form-group" style="margin-bottom:1rem"><label>Description *</label><textarea id="ep-description" rows="4" placeholder="Describe your project..."></textarea></div>
+            <div class="form-group" style="margin-bottom:1rem"><label>Tags (comma separated)</label><input type="text" id="ep-tags" placeholder="Flutter, Firebase, Dart"></div>
+            <div class="form-group" style="margin-bottom:1rem"><label>YouTube Embed URL</label><input type="url" id="ep-youtube" placeholder="https://www.youtube.com/embed/..."></div>
+            <div class="form-group" style="margin-bottom:1rem"><label>GitHub URL</label><input type="url" id="ep-github" placeholder="https://github.com/..."></div>
+            <div class="form-group" style="margin-bottom:1rem"><label>Live Demo URL</label><input type="url" id="ep-live" placeholder="https://..."></div>
+        </div>
+        <div class="add-proj-footer">
+            <button onclick="closeEditProject()" class="btn btn-ghost btn-sm">Cancel</button>
+            <button onclick="saveEditProject()" class="btn btn-primary btn-sm">💾 Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

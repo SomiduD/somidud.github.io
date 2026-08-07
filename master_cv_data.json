@@ -1,0 +1,160 @@
+{
+  "personal": {
+    "name": "Somidu Dilankara",
+    "headline": "Full-Stack Software Engineer, IoT Architect, and Computer Science Scholar",
+    "email": "somidudilan2001@gmail.com",
+    "location": "Gampaha, Sri Lanka",
+    "linkedin": "linkedin.com/in/somidu-dilankara-aaa819242",
+    "github": "github.com/somidud",
+    "facebook": "facebook.com/share/1LGZ6LKfCR/"
+  },
+  "education": [
+    {
+      "institution": "NSBM Green University / Plymouth University",
+      "degree": "BSc (Hons) Computer Science(Undergraduate)",
+      "period": "2022 – Present",
+      "details": "Focusing on advanced algorithms, OOP, software engineering principles, and distributed architectures."
+    },
+    {
+      "institution": "University of Moratuwa",
+      "degree": "Full-Stack Web Developer",
+      "period": "2023",
+      "details": "Production-grade backend patterns, client/server rendering optimization, and database integration."
+    },
+    {
+      "institution": "University of Colombo",
+      "degree": "Advanced Certificate Course in Immunology and Molecular Biology",
+      "period": "2022",
+      "details": "Computational bio-informatics, genetic data analysis, and scientific research methodologies."
+    },
+    {
+      "institution": "Google Digital Garage",
+      "degree": "Certified Digital Marketer",
+      "period": "2021",
+      "details": "Data-driven analytics, search optimization, and modern conversion frameworks."
+    },
+    {
+      "institution": "NIBM",
+      "degree": "Advanced Certificate in English",
+      "period": "2021",
+      "details": "Technical writing, presentations, and core English fundamentals."
+    },
+    {
+      "institution": "ESOFT Metro Campus",
+      "degree": "Diploma in Information Technology AND Diploma in English",
+      "period": "2020",
+      "details": "Networking essentials, hardware concepts, professional communications."
+    },
+    {
+      "institution": "Bandaranayake College, Gampaha",
+      "degree": "Secondary Studies",
+      "period": "– 2012-2020",
+      "details": "Focused on science and mathematics streams."
+    },
+    {
+      "institution": "Anura Junior Model School, Yakkala",
+      "degree": "Primary Education",
+      "period": "– 2011",
+      "details": "Foundational primary school curriculum."
+    }
+  ],
+  "skills": {
+    "software_web": [
+      "Flutter",
+      "Dart",
+      "React",
+      "PHP",
+      "Java",
+      "Python"
+    ],
+    "database_infrastructure": [
+      "Firebase Core",
+      "SQL Server / SSMS",
+      "Docker",
+      "Database Triggers",
+      "Data Migration & Partitioning"
+    ],
+    "hardware_iot": [
+      "ESP32",
+      "Arduino",
+      "Raspberry Pi",
+      "3-Pin Sensors",
+      "IoT Architecture"
+    ],
+    "tools_design": [
+      "Git/GitHub Pro",
+      "Figma UI/UX Layout Design",
+      "R"
+    ]
+  },
+  "projects": [
+    {
+      "id": 1,
+      "name": "UtilityOne",
+      "category": "Mobile Application • Relational Engines",
+      "description": "A centralized utility operational platform engineered specifically as a Mobile Application, running custom server database triggers, strict relation mapping, and isolated application access roles.",
+      "technologies": [
+        "Flutter",
+        "Dart",
+        "Firebase",
+        "SQL Server",
+        "Database Triggers"
+      ],
+      "impact": "Automated operational role verification and secured critical system operations."
+    },
+    {
+      "id": 2,
+      "name": "Greenify",
+      "category": "Mobile Application • Sustainability",
+      "description": "An eco-focused tracking Mobile Application built to monitor environmental impact metrics, encouraging sustainable lifestyle choices through localized data insight analytics.",
+      "technologies": [
+        "Flutter",
+        "Dart",
+        "Firebase Core",
+        "Data Insight Analytics"
+      ],
+      "impact": "Enabled real-time individual carbon footprint calculation and logging."
+    },
+    {
+      "id": 3,
+      "name": "PlannGo",
+      "category": "Mobile Application • Tourism Orchestration",
+      "description": "A full-scale native tourism orchestration Mobile Application featuring asynchronous real-time data streaming, client authentication states, and interactive route mapping.",
+      "technologies": [
+        "Flutter",
+        "Dart",
+        "Firebase Core",
+        "Google Maps API"
+      ],
+      "impact": "Successfully mapped live routes and travel milestones asynchronously."
+    },
+    {
+      "id": 4,
+      "name": "Research Shuffle",
+      "category": "Web Engine • Collaborative Pipelines",
+      "description": "A collaborative research management pipeline (Web Engine) designed to sort, categorize, and cross-reference academic documentation datasets with advanced indexing.",
+      "technologies": [
+        "PHP",
+        "React",
+        "Docker",
+        "R",
+        "SQL Server"
+      ],
+      "impact": "Optimized indexing algorithms to retrieve research datasets instantly."
+    },
+    {
+      "id": 5,
+      "name": "IoT Fire Fighting Robot",
+      "category": "Embedded Firmware • Robotics & Automation",
+      "description": "An automated emergency response node integrating active thermal sensor matrices, real-time telemetry, and physical flame-retardant actuation loops.",
+      "technologies": [
+        "Arduino",
+        "ESP32",
+        "3-Pin Sensors",
+        "C/C++",
+        "IoT Architecture"
+      ],
+      "impact": "Achieved flame detection and physical retardant deployment in under 5 seconds."
+    }
+  ]
+}

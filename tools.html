@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free client-side PDF & image tools by Somidu Dilankara. Image to PDF, PDF to Image, Merge, Split, and more. 100% private — no uploads to any server.">
+    <title>PDF & Image Tools | Somidu Dilankara</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- PDF Libraries (all CDN, client-side only) -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <style>
+    /* ====================================================
+       DESIGN TOKENS (matching portfolio)
+    ==================================================== */
+    :root {
+        --bg-primary: #080810;
+        --bg-surface: #0f0f1a;
+        --bg-card: #13131f;
+        --bg-glass: rgba(15, 15, 26, 0.8);
+        --bg-glass-light: rgba(255,255,255,0.04);
+        --text-primary: #eeeeff;
+        --text-secondary: #7878a8;
+        --text-muted: #454565;
+        --accent: #00f5ff;
+        --accent-purple: #7b2fff;
+        --accent-pink: #ff2d78;
+        --accent-green: #00ff88;
+        --accent-gradient: linear-gradient(135deg,#00f5ff 0%,#7b2fff 50%,#ff2d78 100%);
+        --border: rgba(255,255,255,0.07);
+        --border-bright: rgba(0,245,255,0.25);
+        --radius: 12px;
+        --radius-lg: 20px;
+        --radius-xl: 28px;
+        --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+        --font-mono: 'Fira Code', 'JetBrains Mono', monospace;
+        --shadow-card: 0 8px 32px rgba(0,0,0,0.4);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --nav-height: 64px;
+    }
+    [data-theme="light"] {
+        --bg-primary: #f0f0f8; --bg-surface: #f8f8ff; --bg-card: #ffffff;
+        --text-primary: #080810; --text-secondary: #4a4a6a; --text-muted: #9898b8;
+        --border: rgba(0,0,0,0.08); --bg-glass: rgba(248,248,255,0.9);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+        background: var(--bg-primary); color: var(--text-primary);
+        font-family: var(--font-sans); line-height: 1.65; overflow-x: hidden;
+        -webkit-font-smoothing: antialiased; transition: background 0.3s, color 0.3s;
+        min-height: 100vh;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: var(--font-sans); cursor: pointer; border: none; outline: none; background: none; }
+
+    /* ====================================================
+       TOP NAV
+    ==================================================== */
+    #tools-nav {
+        position: sticky; top: 0; z-index: 100;
+        background: var(--bg-glass); backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border);
+        height: var(--nav-height); display: flex; align-items: center;
+        padding: 0 clamp(1rem, 4vw, 2.5rem);
+    }
+    .tools-nav-inner {
+        width: 100%; max-width: 1200px; margin: 0 auto;
+        display: flex; align-items: center; justify-content: space-between;
+    }
+    .tools-nav-brand {
+        display: flex; align-items: center; gap: 0.6rem; font-weight: 800;
+        font-size: clamp(0.9rem, 2vw, 1.05rem);
+    }
+    .tools-nav-brand-dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        background: var(--accent-gradient); box-shadow: 0 0 10px var(--accent);
+    }
+    .tools-nav-right { display: flex; align-items: center; gap: 1rem; }
+    .tools-nav-back {
+        display: flex; align-items: center; gap: 0.4rem;
+        padding: 0.4rem 1rem; border-radius: 8px; font-size: 0.82rem; font-weight: 500;
+        border: 1px solid var(--border); color: var(--text-secondary); transition: var(--transition);
+        font-family: var(--font-mono);
+    }
+    .tools-nav-back:hover { border-color: var(--border-bright); color: var(--accent); background: rgba(0,245,255,0.05); }
+    .privacy-badge {
+        display: flex; align-items: center; gap: 0.35rem;
+        padding: 0.3rem 0.75rem; border-radius: 50px;
+        background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.2);
+        font-size: 0.72rem; font-weight: 600; color: var(--accent-green);
+        font-family: var(--font-mono); letter-spacing: 0.05em;
+    }
+    .privacy-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-green); animation: pulse 2s ease infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+
+    /* ====================================================
+       HERO HEADER
+    ==================================================== */
+    .tools-hero {
+        padding: clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2.5rem) 2rem;
+        text-align: center;
+        background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(0,245,255,0.06), transparent);
+    }
+    .tools-hero-label {
+        font-family: var(--font-mono); font-size: 0.78rem; font-weight: 600;
+        color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1rem;
+        display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    }
+    .tools-hero h1 {
+        font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; letter-spacing: -0.04em;
+        background: var(--accent-gradient); -webkit-background-clip: text; background-clip: text;
+        -webkit-text-fill-color: transparent; margin-bottom: 1rem; line-height: 1.1;
+    }
+    .tools-hero p {
+        font-size: clamp(0.9rem, 2vw, 1.05rem); color: var(--text-secondary);
+        max-width: 560px; margin: 0 auto 0.75rem; line-height: 1.7;
+    }
+    .tools-privacy-note {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        padding: 0.45rem 1rem; border-radius: 50px;
+        background: rgba(0,255,136,0.06); border: 1px solid rgba(0,255,136,0.15);
+        font-size: 0.8rem; color: var(--accent-green); font-family: var(--font-mono);
+    }
+
+    /* ====================================================
+       TOOL TABS
+    ==================================================== */
+    .tools-tabs-container {
+        padding: 0 clamp(1rem, 4vw, 2.5rem);
+        max-width: 1200px; margin: 0 auto 2rem;
+    }
+    .tools-tabs {
+        display: flex; gap: 0.5rem; flex-wrap: wrap;
+        border-bottom: 1px solid var(--border); padding-bottom: 0;
+        justify-content: center;
+    }
+    .tool-tab {
+        display: flex; align-items: center; gap: 0.5rem;
+        padding: 0.7rem 1.25rem; border-radius: var(--radius) var(--radius) 0 0;
+        font-size: clamp(0.78rem, 1.5vw, 0.88rem); font-weight: 600; cursor: pointer;
+        color: var(--text-muted); border: 1px solid transparent; border-bottom: none;
+        transition: var(--transition); position: relative; bottom: -1px;
+        background: transparent;
+    }
+    .tool-tab:hover { color: var(--text-secondary); background: var(--bg-card); }
+    .tool-tab.active {
+        color: var(--accent); background: var(--bg-card);
+        border-color: var(--border); border-bottom-color: var(--bg-card);
+    }
+    .tool-tab .tab-icon { font-size: 1em; }
+
+    /* ====================================================
+       TOOL PANELS
+    ==================================================== */
+    .tools-content {
+        padding: 0 clamp(1rem, 4vw, 2.5rem);
+        max-width: 1200px; margin: 0 auto; padding-bottom: 4rem;
+    }
+    .tool-panel {
+        display: none; animation: fadeInPanel 0.3s ease;
+    }
+    .tool-panel.active { display: block; }
+    @keyframes fadeInPanel { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ====================================================
+       PANEL HEADER
+    ==================================================== */
+    .panel-header {
+        padding: 2rem 0 1.5rem;
+        display: flex; flex-direction: column; gap: 0.4rem;
+    }
+    .panel-header h2 {
+        font-size: clamp(1.3rem, 3vw, 1.8rem); font-weight: 800; letter-spacing: -0.03em;
+    }
+    .panel-header p { font-size: 0.9rem; color: var(--text-secondary); font-family: var(--font-mono); }
+
+    /* ====================================================
+       DRAG & DROP ZONE
+    ==================================================== */
+    .drop-zone {
+        border: 2px dashed var(--border-bright); border-radius: var(--radius-lg);
+        padding: clamp(2rem, 5vw, 3.5rem) 2rem; text-align: center;
+        cursor: pointer; transition: var(--transition);
+        background: var(--bg-card); position: relative; overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    .drop-zone::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(0,245,255,0.04), transparent);
+        pointer-events: none;
+    }
+    .drop-zone:hover, .drop-zone.dragover {
+        border-color: var(--accent); background: rgba(0,245,255,0.04);
+        transform: scale(1.005);
+    }
+    .drop-zone.dragover { box-shadow: 0 0 30px rgba(0,245,255,0.12); }
+    .drop-zone-icon { font-size: clamp(2.5rem, 5vw, 3.5rem); margin-bottom: 0.75rem; display: block; }
+    .drop-zone h3 { font-size: clamp(0.95rem, 2.5vw, 1.1rem); font-weight: 700; margin-bottom: 0.4rem; }
+    .drop-zone p { font-size: 0.82rem; color: var(--text-muted); font-family: var(--font-mono); }
+    .drop-zone input[type="file"] { display: none; }
+
+    /* ====================================================
+       FILE LIST
+    ==================================================== */
+    .file-list {
+        display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.5rem;
+    }
+    .file-item {
+        display: flex; align-items: center; gap: 0.75rem;
+        padding: 0.8rem 1rem; background: var(--bg-surface); border: 1px solid var(--border);
+        border-radius: var(--radius); transition: var(--transition-fast);
+    }
+    .file-item:hover { border-color: var(--border-bright); }
+    .file-icon { font-size: 1.2rem; flex-shrink: 0; }
+    .file-info { flex: 1; min-width: 0; }
+    .file-name { font-size: 0.88rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .file-meta { font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 0.15rem; }
+    .file-remove {
+        width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center;
+        color: var(--text-muted); font-size: 0.85rem; cursor: pointer; transition: var(--transition-fast);
+        background: var(--bg-card); border: 1px solid var(--border); flex-shrink: 0;
+    }
+    .file-remove:hover { color: var(--accent-pink); border-color: rgba(255,45,120,0.3); background: rgba(255,45,120,0.06); }
+
+    /* ====================================================
+       BUTTONS
+    ==================================================== */
+    .btn {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        padding: 0.75rem 1.5rem; border-radius: var(--radius); font-size: 0.9rem;
+        font-weight: 700; cursor: pointer; transition: var(--transition); border: none;
+        font-family: var(--font-sans);
+    }
+    .btn-primary {
+        background: var(--accent-gradient); color: #fff;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,245,255,0.25); }
+    .btn-primary:disabled { opacity: 0.5; transform: none; cursor: not-allowed; }
+    .btn-outline {
+        background: transparent; border: 1px solid var(--border-bright);
+        color: var(--accent);
+    }
+    .btn-outline:hover { background: rgba(0,245,255,0.06); transform: translateY(-1px); }
+    .btn-ghost {
+        background: transparent; border: 1px solid var(--border);
+        color: var(--text-secondary);
+    }
+    .btn-ghost:hover { border-color: var(--border-bright); color: var(--text-primary); }
+    .btn-danger { background: rgba(255,45,120,0.1); border: 1px solid rgba(255,45,120,0.3); color: #ff2d78; }
+    .btn-danger:hover { background: rgba(255,45,120,0.18); }
+
+    .btn-group { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.5rem; }
+
+    /* ====================================================
+       PROGRESS & STATUS
+    ==================================================== */
+    .progress-bar {
+        width: 100%; height: 6px; background: var(--bg-surface);
+        border-radius: 3px; overflow: hidden; margin: 1rem 0; display: none;
+    }
+    .progress-fill {
+        height: 100%; background: var(--accent-gradient); border-radius: 3px;
+        transition: width 0.3s ease; width: 0%;
+    }
+    .progress-bar.active { display: block; }
+    .status-log {
+        font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent);
+        padding: 0.75rem 1rem; background: var(--bg-card); border-radius: var(--radius);
+        border: 1px solid var(--border); margin: 0.75rem 0; min-height: 2.5rem;
+        white-space: pre-wrap; display: none; line-height: 1.6;
+    }
+    .status-log.show { display: block; }
+
+    /* ====================================================
+       RESULT DOWNLOAD ZONE
+    ==================================================== */
+    .result-zone {
+        display: none; padding: 1.5rem; background: rgba(0,245,255,0.04);
+        border: 1px solid var(--border-bright); border-radius: var(--radius-lg);
+        text-align: center; margin-top: 1rem;
+    }
+    .result-zone.show { display: block; animation: fadeInPanel 0.4s ease; }
+    .result-zone h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.3rem; color: var(--accent); }
+    .result-zone p { font-size: 0.82rem; color: var(--text-secondary); font-family: var(--font-mono); margin-bottom: 1rem; }
+
+    /* ====================================================
+       PAGE THUMBNAILS (for Delete Pages tool)
+    ==================================================== */
+    .page-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 0.75rem; margin: 1rem 0;
+    }
+    .page-thumb {
+        position: relative; cursor: pointer; border-radius: var(--radius);
+        border: 2px solid var(--border); overflow: hidden; transition: var(--transition-fast);
+        aspect-ratio: 0.707;
+    }
+    .page-thumb:hover { border-color: var(--border-bright); }
+    .page-thumb.selected {
+        border-color: var(--accent-pink);
+        box-shadow: 0 0 15px rgba(255,45,120,0.2);
+    }
+    .page-thumb canvas { width: 100%; height: 100%; display: block; }
+    .page-thumb-label {
+        position: absolute; bottom: 0; left: 0; right: 0; padding: 0.35rem;
+        background: rgba(0,0,0,0.7); font-size: 0.72rem; text-align: center;
+        font-family: var(--font-mono);
+    }
+    .page-thumb.selected .page-thumb-label {
+        background: rgba(255,45,120,0.7); color: #fff;
+    }
+    .page-thumb-del {
+        position: absolute; top: 4px; right: 4px; width: 20px; height: 20px;
+        background: rgba(255,45,120,0.8); border-radius: 50%;
+        display: none; align-items: center; justify-content: center;
+        font-size: 0.65rem; font-weight: 700; color: #fff;
+    }
+    .page-thumb.selected .page-thumb-del { display: flex; }
+
+    /* ====================================================
+       INFO CARD
+    ==================================================== */
+    .info-card {
+        display: flex; align-items: flex-start; gap: 0.75rem;
+        padding: 1rem; border-radius: var(--radius); margin-bottom: 1.25rem;
+        background: rgba(0,245,255,0.04); border: 1px solid rgba(0,245,255,0.12);
+        font-size: 0.83rem; color: var(--text-secondary); line-height: 1.6;
+    }
+    .info-card-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.1rem; }
+
+    /* ====================================================
+       RANGE / CHECKBOX INPUTS
+    ==================================================== */
+    .form-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; flex: 1; min-width: 160px; }
+    .form-group label { font-size: 0.8rem; font-weight: 500; color: var(--text-secondary); font-family: var(--font-mono); }
+    .form-group select, .form-group input[type="number"] {
+        background: var(--bg-card); border: 1px solid var(--border);
+        border-radius: var(--radius); padding: 0.55rem 0.8rem; color: var(--text-primary);
+        font-size: 0.9rem; outline: none; font-family: var(--font-sans); transition: border-color 0.2s;
+    }
+    .form-group select:focus, .form-group input:focus { border-color: var(--border-bright); }
+
+    /* ====================================================
+       SCROLLBAR
+    ==================================================== */
+    ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ====================================================
+       FOOTER
+    ==================================================== */
+    .tools-footer {
+        text-align: center; padding: 2rem 1rem;
+        font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);
+        border-top: 1px solid var(--border);
+    }
+    .tools-footer a { color: var(--accent); }
+
+    /* ====================================================
+       RESPONSIVE
+    ==================================================== */
+    @media (max-width: 640px) {
+        .tools-tabs { gap: 0.25rem; }
+        .tool-tab { padding: 0.55rem 0.75rem; font-size: 0.72rem; }
+        .tool-tab .tab-label { display: none; }
+        .page-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
+    }
+    </style>
+</head>
+<body>
+
+<!-- ====================================================
+     TOP NAV
+====================================================== -->
+<nav id="tools-nav">
+    <div class="tools-nav-inner">
+        <div class="tools-nav-brand">
+            <div class="tools-nav-brand-dot"></div>
+            <span>PDF &amp; Image Tools</span>
+        </div>
+        <div class="tools-nav-right">
+            <div class="privacy-badge">
+                <span class="privacy-dot"></span>
+                100% Private — No uploads
+            </div>
+            <a href="index.html" class="tools-nav-back">
+                ← Portfolio
+            </a>
+            <button id="theme-btn-tools" onclick="toggleTheme()" style="width:36px;height:36px;border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:1rem;transition:var(--transition);" title="Toggle theme">☀️</button>
+        </div>
+    </div>
+</nav>
+
+<!-- ====================================================
+     HERO
+====================================================== -->
+<header class="tools-hero">
+    <div class="tools-hero-label">
+        <span>🔧</span> Developer Utility Suite
+    </div>
+    <h1>PDF &amp; Image Tools</h1>
+    <p>Powerful document processing tools that run <strong>entirely in your browser</strong>. No uploads, no accounts, no limits.</p>
+    <div class="tools-privacy-note">
+        🔒 All processing happens locally on your device — your files never leave your browser
+    </div>
+</header>
+
+<!-- ====================================================
+     TABS
+====================================================== -->
+<div class="tools-tabs-container">
+    <div class="tools-tabs" role="tablist">
+        <button class="tool-tab active" role="tab" onclick="switchTab('img-to-pdf')" id="tab-img-to-pdf">
+            <span class="tab-icon">🖼️</span><span class="tab-label">Image → PDF</span>
+        </button>
+        <button class="tool-tab" role="tab" onclick="switchTab('pdf-to-img')" id="tab-pdf-to-img">
+            <span class="tab-icon">📄</span><span class="tab-label">PDF → Image</span>
+        </button>
+        <button class="tool-tab" role="tab" onclick="switchTab('merge')" id="tab-merge">
+            <span class="tab-icon">🔗</span><span class="tab-label">Merge PDFs</span>
+        </button>
+        <button class="tool-tab" role="tab" onclick="switchTab('delete-pages')" id="tab-delete-pages">
+            <span class="tab-icon">✂️</span><span class="tab-label">Delete Pages</span>
+        </button>
+        <button class="tool-tab" role="tab" onclick="switchTab('add-image')" id="tab-add-image">
+            <span class="tab-icon">➕</span><span class="tab-label">Add Image</span>
+        </button>
+    </div>
+</div>
+
+<!-- ====================================================
+     TOOL PANELS
+====================================================== -->
+<main class="tools-content">
+
+    <!-- ── TOOL 1: Image to PDF ─────────────────────── -->
+    <section class="tool-panel active" id="panel-img-to-pdf" role="tabpanel">
+        <div class="panel-header">
+            <h2>🖼️ Image to PDF</h2>
+            <p>// Convert JPG, PNG, WEBP images into a downloadable PDF document</p>
+        </div>
+        <div class="info-card">
+            <span class="info-card-icon">💡</span>
+            <div>Drop multiple images below. Each image becomes one page. Drag to reorder before converting. Supports JPG, PNG, WEBP, GIF formats.</div>
+        </div>
+
+        <div class="drop-zone" id="dz-img-to-pdf" onclick="document.getElementById('input-img-to-pdf').click()">
+            <input type="file" id="input-img-to-pdf" accept="image/*" multiple>
+            <span class="drop-zone-icon">🖼️</span>
+            <h3>Drop images here or click to browse</h3>
+            <p>Supports JPG, PNG, WEBP, GIF · Multiple files accepted</p>
+        </div>
+
+        <div class="file-list" id="list-img-to-pdf"></div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Page Size</label>
+                <select id="img-pdf-size">
+                    <option value="a4">A4 (210×297 mm)</option>
+                    <option value="letter">Letter (216×279 mm)</option>
+                    <option value="a3">A3 (297×420 mm)</option>
+                    <option value="fit">Fit to image</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Orientation</label>
+                <select id="img-pdf-orientation">
+                    <option value="portrait">Portrait</option>
+                    <option value="landscape">Landscape</option>
+                    <option value="auto">Auto (per image)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Margin (px)</label>
+                <input type="number" id="img-pdf-margin" value="10" min="0" max="80">
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-primary" id="btn-img-to-pdf" onclick="convertImagesToPDF()">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                Convert to PDF
+            </button>
+            <button class="btn btn-ghost" onclick="clearTool('img-to-pdf')">Clear</button>
+        </div>
+
+        <div class="progress-bar" id="prog-img-to-pdf"><div class="progress-fill" id="fill-img-to-pdf"></div></div>
+        <div class="status-log" id="log-img-to-pdf"></div>
+        <div class="result-zone" id="result-img-to-pdf">
+            <h3>✅ PDF Created!</h3>
+            <p id="result-label-img-to-pdf">Your PDF is ready to download.</p>
+            <button class="btn btn-primary" id="dl-img-to-pdf">⬇️ Download PDF</button>
+        </div>
+    </section>
+
+    <!-- ── TOOL 2: PDF to Image ─────────────────────── -->
+    <section class="tool-panel" id="panel-pdf-to-img" role="tabpanel">
+        <div class="panel-header">
+            <h2>📄 PDF to Image</h2>
+            <p>// Convert each PDF page into a high-quality PNG image</p>
+        </div>
+        <div class="info-card">
+            <span class="info-card-icon">💡</span>
+            <div>Upload a PDF file and each page will be rendered as a PNG image. If there are multiple pages, they'll be downloaded as a ZIP archive.</div>
+        </div>
+
+        <div class="drop-zone" id="dz-pdf-to-img" onclick="document.getElementById('input-pdf-to-img').click()">
+            <input type="file" id="input-pdf-to-img" accept=".pdf" >
+            <span class="drop-zone-icon">📄</span>
+            <h3>Drop PDF here or click to browse</h3>
+            <p>One PDF file · All pages will be extracted</p>
+        </div>
+
+        <div class="file-list" id="list-pdf-to-img"></div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Scale / Quality</label>
+                <select id="pdf-img-scale">
+                    <option value="1">1× (Screen)</option>
+                    <option value="1.5">1.5× (Good)</option>
+                    <option value="2" selected>2× (High)</option>
+                    <option value="3">3× (Print)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Image Format</label>
+                <select id="pdf-img-format">
+                    <option value="png" selected>PNG (Lossless)</option>
+                    <option value="jpeg">JPEG (Smaller)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-primary" id="btn-pdf-to-img" onclick="convertPDFToImages()">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                Extract Images
+            </button>
+            <button class="btn btn-ghost" onclick="clearTool('pdf-to-img')">Clear</button>
+        </div>
+
+        <div class="progress-bar" id="prog-pdf-to-img"><div class="progress-fill" id="fill-pdf-to-img"></div></div>
+        <div class="status-log" id="log-pdf-to-img"></div>
+        <div class="result-zone" id="result-pdf-to-img">
+            <h3>✅ Images Extracted!</h3>
+            <p id="result-label-pdf-to-img">Your images are ready.</p>
+            <div id="dl-pdf-to-img-btns" style="display:flex;flex-wrap:wrap;gap:0.5rem;justify-content:center;"></div>
+        </div>
+    </section>
+
+    <!-- ── TOOL 3: Merge PDFs ────────────────────────── -->
+    <section class="tool-panel" id="panel-merge" role="tabpanel">
+        <div class="panel-header">
+            <h2>🔗 Merge / Combine PDFs</h2>
+            <p>// Combine multiple PDF files into one document in order</p>
+        </div>
+        <div class="info-card">
+            <span class="info-card-icon">💡</span>
+            <div>Upload two or more PDF files. They will be merged in the order shown. Drag items in the list to reorder them before merging.</div>
+        </div>
+
+        <div class="drop-zone" id="dz-merge" onclick="document.getElementById('input-merge').click()">
+            <input type="file" id="input-merge" accept=".pdf" multiple>
+            <span class="drop-zone-icon">🔗</span>
+            <h3>Drop PDFs here or click to browse</h3>
+            <p>Multiple PDF files · Merged in order shown below</p>
+        </div>
+
+        <div class="file-list" id="list-merge"></div>
+
+        <div class="btn-group">
+            <button class="btn btn-primary" id="btn-merge" onclick="mergePDFs()">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M17 1l4 4-4 4V6h-5.17L7 11l4.83 5H17v-3l4 4-4 4v-3h-5.83L6 12l5.17-5H17V4z"/></svg>
+                Merge PDFs
+            </button>
+            <button class="btn btn-ghost" onclick="clearTool('merge')">Clear</button>
+        </div>
+
+        <div class="progress-bar" id="prog-merge"><div class="progress-fill" id="fill-merge"></div></div>
+        <div class="status-log" id="log-merge"></div>
+        <div class="result-zone" id="result-merge">
+            <h3>✅ Merge Complete!</h3>
+            <p id="result-label-merge">Your merged PDF is ready.</p>
+            <button class="btn btn-primary" id="dl-merge">⬇️ Download Merged PDF</button>
+        </div>
+    </section>
+
+    <!-- ── TOOL 4: Delete Pages ──────────────────────── -->
+    <section class="tool-panel" id="panel-delete-pages" role="tabpanel">
+        <div class="panel-header">
+            <h2>✂️ Delete PDF Pages</h2>
+            <p>// Remove specific pages from a PDF file</p>
+        </div>
+        <div class="info-card">
+            <span class="info-card-icon">💡</span>
+            <div>Upload a PDF, then click on the page thumbnails you want to <strong style="color:#ff2d78">delete</strong> (they'll turn red). Click "Remove Selected Pages" when done.</div>
+        </div>
+
+        <div class="drop-zone" id="dz-delete-pages" onclick="document.getElementById('input-delete-pages').click()">
+            <input type="file" id="input-delete-pages" accept=".pdf">
+            <span class="drop-zone-icon">✂️</span>
+            <h3>Drop PDF here or click to browse</h3>
+            <p>One PDF file · Click pages to mark them for deletion</p>
+        </div>
+
+        <div class="file-list" id="list-delete-pages"></div>
+
+        <div id="page-preview-container" style="display:none;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;">
+                <div style="font-family:var(--font-mono);font-size:0.82rem;color:var(--text-secondary)">
+                    Click pages to select for deletion. <span id="del-selected-count" style="color:#ff2d78;font-weight:700">0</span> selected.
+                </div>
+                <div style="display:flex;gap:0.5rem;">
+                    <button class="btn btn-ghost" style="font-size:0.8rem;padding:0.4rem 0.8rem" onclick="selectAllPages()">Select All</button>
+                    <button class="btn btn-ghost" style="font-size:0.8rem;padding:0.4rem 0.8rem" onclick="clearPageSelection()">Clear Selection</button>
+                </div>
+            </div>
+            <div class="page-grid" id="page-thumbs-grid"></div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-danger" id="btn-delete-pages" onclick="deleteSelectedPages()">
+                🗑️ Remove Selected Pages
+            </button>
+            <button class="btn btn-ghost" onclick="clearTool('delete-pages')">Clear</button>
+        </div>
+
+        <div class="progress-bar" id="prog-delete-pages"><div class="progress-fill" id="fill-delete-pages"></div></div>
+        <div class="status-log" id="log-delete-pages"></div>
+        <div class="result-zone" id="result-delete-pages">
+            <h3>✅ Pages Removed!</h3>
+            <p id="result-label-delete-pages">Your updated PDF is ready.</p>
+            <button class="btn btn-primary" id="dl-delete-pages">⬇️ Download PDF</button>
+        </div>
+    </section>
+
+    <!-- ── TOOL 5: Add Image to PDF ─────────────────── -->
+    <section class="tool-panel" id="panel-add-image" role="tabpanel">
+        <div class="panel-header">
+            <h2>➕ Add Image to PDF</h2>
+            <p>// Insert an image as a new page into an existing PDF</p>
+        </div>
+        <div class="info-card">
+            <span class="info-card-icon">💡</span>
+            <div>Upload a PDF and an image file. The image will be added as a new page at the position you specify (beginning, end, or specific page number).</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;" class="add-img-grid">
+            <div>
+                <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--text-secondary);margin-bottom:0.5rem;">📄 Base PDF</div>
+                <div class="drop-zone" id="dz-add-pdf" onclick="document.getElementById('input-add-pdf').click()">
+                    <input type="file" id="input-add-pdf" accept=".pdf">
+                    <span class="drop-zone-icon">📄</span>
+                    <h3 style="font-size:0.9rem">Drop PDF here</h3>
+                    <p>The PDF to add image into</p>
+                </div>
+                <div class="file-list" id="list-add-pdf"></div>
+            </div>
+            <div>
+                <div style="font-family:var(--font-mono);font-size:0.8rem;color:var(--text-secondary);margin-bottom:0.5rem;">🖼️ Image to Insert</div>
+                <div class="drop-zone" id="dz-add-img" onclick="document.getElementById('input-add-img').click()">
+                    <input type="file" id="input-add-img" accept="image/png,image/jpeg,image/jpg">
+                    <span class="drop-zone-icon">🖼️</span>
+                    <h3 style="font-size:0.9rem">Drop image here</h3>
+                    <p>JPG or PNG image</p>
+                </div>
+                <div class="file-list" id="list-add-img"></div>
+            </div>
+        </div>
+
+        <div class="form-row" style="margin-top:0.5rem;">
+            <div class="form-group">
+                <label>Insert Position</label>
+                <select id="add-img-position">
+                    <option value="start">At the beginning</option>
+                    <option value="end" selected>At the end</option>
+                    <option value="custom">At specific page number</option>
+                </select>
+            </div>
+            <div class="form-group" id="add-img-page-group" style="display:none;">
+                <label>After page #</label>
+                <input type="number" id="add-img-page-num" value="1" min="1">
+            </div>
+            <div class="form-group">
+                <label>Page Size</label>
+                <select id="add-img-page-size">
+                    <option value="fit">Fit to image</option>
+                    <option value="a4" selected>A4</option>
+                    <option value="letter">Letter</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-primary" id="btn-add-image" onclick="addImageToPDF()">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                Add Image to PDF
+            </button>
+            <button class="btn btn-ghost" onclick="clearTool('add-image')">Clear</button>
+        </div>
+
+        <div class="progress-bar" id="prog-add-image"><div class="progress-fill" id="fill-add-image"></div></div>
+        <div class="status-log" id="log-add-image"></div>
+        <div class="result-zone" id="result-add-image">
+            <h3>✅ Image Added!</h3>
+            <p id="result-label-add-image">Your updated PDF is ready.</p>
+            <button class="btn btn-primary" id="dl-add-image">⬇️ Download PDF</button>
+        </div>
+    </section>
+
+</main>
+
+<!-- ====================================================
+     FOOTER
+====================================================== -->
+<footer class="tools-footer">
+    <p>🔒 All processing is 100% client-side · Your files never leave your browser · <a href="index.html">← Back to Portfolio</a></p>
+    <p style="margin-top:0.4rem;">Built by <a href="index.html">Somidu Dilankara</a> · Powered by pdf-lib, pdf.js, JSZip</p>
+</footer>
+
+<!-- ====================================================
+     JAVASCRIPT
+====================================================== -->
+<script>
+// ── pdf.js worker config ──────────────────────────────
+if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+// ── Tab Switching ─────────────────────────────────────
+function switchTab(toolId) {
+    document.querySelectorAll('.tool-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + toolId).classList.add('active');
+    document.getElementById('panel-' + toolId).classList.add('active');
+}
+
+// ── Theme Toggle ──────────────────────────────────────
+function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('theme-btn-tools').textContent = isDark ? '🌙' : '☀️';
+}
+
+// ── Drag & Drop Setup ─────────────────────────────────
+function setupDropZone(dzId, inputId, onFiles) {
+    const dz = document.getElementById(dzId);
+    const input = document.getElementById(inputId);
+    if (!dz || !input) return;
+    input.addEventListener('change', () => onFiles(Array.from(input.files)));
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+    dz.addEventListener('drop', e => {
+        e.preventDefault(); dz.classList.remove('dragover');
+        onFiles(Array.from(e.dataTransfer.files));
+    });
+}
+
+// ── File size formatter ───────────────────────────────
+function fmtSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+}
+
+// ── Clear Tool ────────────────────────────────────────
+function clearTool(toolId) {
+    const idMap = { 'img-to-pdf': 'img-to-pdf', 'pdf-to-img': 'pdf-to-img', 'merge': 'merge', 'delete-pages': 'delete-pages', 'add-image': 'add-image' };
+    const id = idMap[toolId];
+    if (!id) return;
+    ['list-' + id, 'list-add-pdf', 'list-add-img'].forEach(lid => {
+        const el = document.getElementById(lid);
+        if (el) el.innerHTML = '';
+    });
+    const prog = document.getElementById('prog-' + id);
+    const log = document.getElementById('log-' + id);
+    const result = document.getElementById('result-' + id);
+    if (prog) prog.classList.remove('active');
+    if (log) { log.textContent = ''; log.classList.remove('show'); }
+    if (result) result.classList.remove('show');
+    // Reset file inputs
+    document.querySelectorAll(`#panel-${id} input[type="file"]`).forEach(el => el.value = '');
+    // Special resets
+    if (toolId === 'delete-pages') {
+        document.getElementById('page-preview-container').style.display = 'none';
+        document.getElementById('page-thumbs-grid').innerHTML = '';
+        selectedPages.clear(); deletePdfBytes = null;
+    }
+    if (toolId === 'add-image') {
+        addPdfBytes = null; addImageBytes = null; addImageType = '';
+    }
+    fileMap[toolId] = [];
+}
+
+// ── Utility: set progress ─────────────────────────────
+function setProgress(toolId, pct, msg) {
+    const fill = document.getElementById('fill-' + toolId);
+    const prog = document.getElementById('prog-' + toolId);
+    const log  = document.getElementById('log-' + toolId);
+    if (fill) fill.style.width = pct + '%';
+    if (prog) prog.classList.toggle('active', pct > 0 && pct < 100);
+    if (log && msg) { log.textContent = msg; log.classList.add('show'); }
+}
+
+function showResult(toolId, msg) {
+    setProgress(toolId, 100, msg || '');
+    const result = document.getElementById('result-' + toolId);
+    if (result) result.classList.add('show');
+}
+
+// ── File state storage ────────────────────────────────
+const fileMap = { 'img-to-pdf': [], 'pdf-to-img': [], 'merge': [], 'delete-pages': [], 'add-image-pdf': [], 'add-image-img': [] };
+
+// ── Render file list item ─────────────────────────────
+function renderFileItem(listId, file, removeCallback) {
+    const list = document.getElementById(listId);
+    if (!list) return;
+    const item = document.createElement('div');
+    item.className = 'file-item';
+    const isImage = file.type.startsWith('image/');
+    item.innerHTML = `
+        <span class="file-icon">${isImage ? '🖼️' : '📄'}</span>
+        <div class="file-info">
+            <div class="file-name">${file.name}</div>
+            <div class="file-meta">${fmtSize(file.size)} · ${file.type || 'unknown'}</div>
+        </div>
+        <button class="file-remove" title="Remove">✕</button>`;
+    item.querySelector('.file-remove').addEventListener('click', () => {
+        item.remove();
+        if (removeCallback) removeCallback(file);
+    });
+    list.appendChild(item);
+}
+
+// ═══════════════════════════════════════════════════════════
+// TOOL 1 — Image to PDF
+// ═══════════════════════════════════════════════════════════
+let imgToPdfFiles = [];
+
+setupDropZone('dz-img-to-pdf', 'input-img-to-pdf', files => {
+    files.filter(f => f.type.startsWith('image/')).forEach(f => {
+        imgToPdfFiles.push(f);
+        renderFileItem('list-img-to-pdf', f, removed => {
+            imgToPdfFiles = imgToPdfFiles.filter(x => x !== removed);
+        });
+    });
+});
+
+async function convertImagesToPDF() {
+    if (!imgToPdfFiles.length) { alert('Please add at least one image first!'); return; }
+    const btn = document.getElementById('btn-img-to-pdf');
+    btn.disabled = true;
+    setProgress('img-to-pdf', 5, '⚙️ Initializing PDF...');
+    try {
+        const { PDFDocument } = PDFLib;
+        const pdfDoc = await PDFDocument.create();
+        const size = document.getElementById('img-pdf-size').value;
+        const orientation = document.getElementById('img-pdf-orientation').value;
+        const margin = parseInt(document.getElementById('img-pdf-margin').value) || 0;
+        const sizes = { a4: [595.28, 841.89], letter: [612, 792], a3: [841.89, 1190.55] };
+
+        for (let i = 0; i < imgToPdfFiles.length; i++) {
+            const f = imgToPdfFiles[i];
+            setProgress('img-to-pdf', 10 + Math.round(80 * i / imgToPdfFiles.length), `📄 Processing image ${i+1} of ${imgToPdfFiles.length}...`);
+            const ab = await f.arrayBuffer();
+            let img;
+            if (f.type === 'image/png') img = await pdfDoc.embedPng(ab);
+            else { img = await pdfDoc.embedJpg(ab); }
+            const iw = img.width, ih = img.height;
+            let pw, ph;
+            if (size === 'fit') { pw = iw + margin*2; ph = ih + margin*2; }
+            else {
+                [pw, ph] = sizes[size] || sizes['a4'];
+                let o = orientation;
+                if (o === 'auto') o = iw > ih ? 'landscape' : 'portrait';
+                if (o === 'landscape') [pw, ph] = [ph, pw];
+            }
+            const page = pdfDoc.addPage([pw, ph]);
+            const availW = pw - margin * 2;
+            const availH = ph - margin * 2;
+            const scale = Math.min(availW / iw, availH / ih);
+            const dw = iw * scale, dh = ih * scale;
+            const dx = margin + (availW - dw) / 2;
+            const dy = margin + (availH - dh) / 2;
+            page.drawImage(img, { x: dx, y: dy, width: dw, height: dh });
+        }
+
+        setProgress('img-to-pdf', 90, '💾 Saving PDF...');
+        const pdfBytes = await pdfDoc.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const dl = document.getElementById('dl-img-to-pdf');
+        dl.onclick = () => { const a = document.createElement('a'); a.href = url; a.download = 'converted_images.pdf'; a.click(); };
+        document.getElementById('result-label-img-to-pdf').textContent = `${imgToPdfFiles.length} image(s) → ${fmtSize(pdfBytes.length)} PDF`;
+        showResult('img-to-pdf', `✅ Done! Created ${imgToPdfFiles.length}-page PDF.`);
+    } catch(e) {
+        setProgress('img-to-pdf', 0, '❌ Error: ' + e.message);
+        console.error(e);
+    }
+    btn.disabled = false;
+}
+
+// ═══════════════════════════════════════════════════════════
+// TOOL 2 — PDF to Image
+// ═══════════════════════════════════════════════════════════
+let pdfToImgFile = null;
+
+setupDropZone('dz-pdf-to-img', 'input-pdf-to-img', files => {
+    const f = files.find(f => f.type === 'application/pdf' || f.name.endsWith('.pdf'));
+    if (!f) return;
+    pdfToImgFile = f;
+    document.getElementById('list-pdf-to-img').innerHTML = '';
+    renderFileItem('list-pdf-to-img', f, () => { pdfToImgFile = null; });
+});
+
+async function convertPDFToImages() {
+    if (!pdfToImgFile) { alert('Please select a PDF file!'); return; }
+    if (typeof pdfjsLib === 'undefined') { alert('pdf.js not loaded. Please check your connection.'); return; }
+    const btn = document.getElementById('btn-pdf-to-img');
+    btn.disabled = true;
+    const scale = parseFloat(document.getElementById('pdf-img-scale').value) || 2;
+    const format = document.getElementById('pdf-img-format').value;
+    const dlContainer = document.getElementById('dl-pdf-to-img-btns');
+    dlContainer.innerHTML = '';
+    setProgress('pdf-to-img', 5, '📖 Loading PDF...');
+    try {
+        const ab = await pdfToImgFile.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+        const numPages = pdf.numPages;
+        const images = [];
+        for (let i = 1; i <= numPages; i++) {
+            setProgress('pdf-to-img', 10 + Math.round(80 * (i-1) / numPages), `🖼️ Rendering page ${i} of ${numPages}...`);
+            const page = await pdf.getPage(i);
+            const viewport = page.getViewport({ scale });
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width; canvas.height = viewport.height;
+            const ctx = canvas.getContext('2d');
+            await page.render({ canvasContext: ctx, viewport }).promise;
+            const mime = format === 'jpeg' ? 'image/jpeg' : 'image/png';
+            const dataUrl = canvas.toDataURL(mime, 0.92);
+            images.push({ dataUrl, page: i });
+        }
+        setProgress('pdf-to-img', 92, '📦 Packaging images...');
+        if (images.length === 1) {
+            const a = document.createElement('a');
+            a.href = images[0].dataUrl;
+            a.download = `page_1.${format}`;
+            const btn2 = document.createElement('button');
+            btn2.className = 'btn btn-primary';
+            btn2.textContent = `⬇️ Download Page 1 (.${format})`;
+            btn2.onclick = () => a.click();
+            dlContainer.appendChild(btn2);
+        } else {
+            // Create ZIP
+            const zip = new JSZip();
+            images.forEach(({ dataUrl, page }) => {
+                const base64 = dataUrl.split(',')[1];
+                zip.file(`page_${String(page).padStart(3, '0')}.${format}`, base64, { base64: true });
+            });
+            const zipBlob = await zip.generateAsync({ type: 'blob' });
+            const zipUrl = URL.createObjectURL(zipBlob);
+            const btn2 = document.createElement('button');
+            btn2.className = 'btn btn-primary';
+            btn2.textContent = `⬇️ Download All ${numPages} Pages (.zip)`;
+            btn2.onclick = () => { const a = document.createElement('a'); a.href = zipUrl; a.download = 'pdf_pages.zip'; a.click(); };
+            dlContainer.appendChild(btn2);
+        }
+        document.getElementById('result-label-pdf-to-img').textContent = `${numPages} page(s) extracted as ${format.toUpperCase()}`;
+        showResult('pdf-to-img', `✅ Done! Extracted ${numPages} page(s).`);
+    } catch(e) {
+        setProgress('pdf-to-img', 0, '❌ Error: ' + e.message);
+        console.error(e);
+    }
+    btn.disabled = false;
+}
+
+// ═══════════════════════════════════════════════════════════
+// TOOL 3 — Merge PDFs
+// ═══════════════════════════════════════════════════════════
+let mergeFiles = [];
+
+setupDropZone('dz-merge', 'input-merge', files => {
+    files.filter(f => f.type === 'application/pdf' || f.name.endsWith('.pdf')).forEach(f => {
+        mergeFiles.push(f);
+        renderFileItem('list-merge', f, removed => {
+            mergeFiles = mergeFiles.filter(x => x !== removed);
+        });
+    });
+});
+
+async function mergePDFs() {
+    if (mergeFiles.length < 2) { alert('Please add at least 2 PDF files to merge!'); return; }
+    const btn = document.getElementById('btn-merge');
+    btn.disabled = true;
+    setProgress('merge', 5, '📚 Initializing merge...');
+    try {
+        const { PDFDocument } = PDFLib;
+        const merged = await PDFDocument.create();
+        for (let i = 0; i < mergeFiles.length; i++) {
+            setProgress('merge', 10 + Math.round(80 * i / mergeFiles.length), `📄 Merging: ${mergeFiles[i].name}...`);
+            const ab = await mergeFiles[i].arrayBuffer();
+            const doc = await PDFDocument.load(ab);
+            const pages = await merged.copyPages(doc, doc.getPageIndices());
+            pages.forEach(p => merged.addPage(p));
+        }
+        setProgress('merge', 92, '💾 Saving merged PDF...');
+        const pdfBytes = await merged.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const total = mergeFiles.reduce((sum, f) => sum + f.size, 0);
+        document.getElementById('dl-merge').onclick = () => { const a = document.createElement('a'); a.href = url; a.download = 'merged.pdf'; a.click(); };
+        document.getElementById('result-label-merge').textContent = `${mergeFiles.length} files merged → ${fmtSize(pdfBytes.length)} PDF`;
+        showResult('merge', `✅ Merged ${mergeFiles.length} PDFs into one.`);
+    } catch(e) {
+        setProgress('merge', 0, '❌ Error: ' + e.message);
+        console.error(e);
+    }
+    btn.disabled = false;
+}
+
+// ═══════════════════════════════════════════════════════════
+// TOOL 4 — Delete Pages
+// ═══════════════════════════════════════════════════════════
+let deletePdfBytes = null;
+let selectedPages = new Set();
+let totalPageCount = 0;
+
+setupDropZone('dz-delete-pages', 'input-delete-pages', async files => {
+    const f = files.find(f => f.type === 'application/pdf' || f.name.endsWith('.pdf'));
+    if (!f) return;
+    deletePdfBytes = await f.arrayBuffer();
+    document.getElementById('list-delete-pages').innerHTML = '';
+    renderFileItem('list-delete-pages', f, () => { deletePdfBytes = null; selectedPages.clear(); document.getElementById('page-preview-container').style.display = 'none'; });
+    await renderPageThumbnails();
+});
+
+async function renderPageThumbnails() {
+    if (!deletePdfBytes || typeof pdfjsLib === 'undefined') return;
+    setProgress('delete-pages', 5, '🔍 Loading page previews...');
+    const grid = document.getElementById('page-thumbs-grid');
+    grid.innerHTML = '';
+    selectedPages.clear();
+    document.getElementById('del-selected-count').textContent = '0';
+    try {
+        const pdf = await pdfjsLib.getDocument({ data: deletePdfBytes.slice() }).promise;
+        totalPageCount = pdf.numPages;
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const vp = page.getViewport({ scale: 0.5 });
+            const canvas = document.createElement('canvas');
+            canvas.width = vp.width; canvas.height = vp.height;
+            await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+            const thumb = document.createElement('div');
+            thumb.className = 'page-thumb'; thumb.dataset.page = i;
+            thumb.innerHTML = `<div class="page-thumb-del">✕</div><div class="page-thumb-label">Page ${i}</div>`;
+            thumb.insertBefore(canvas, thumb.firstChild);
+            thumb.addEventListener('click', () => togglePageSelection(thumb, i));
+            grid.appendChild(thumb);
+            setProgress('delete-pages', 10 + Math.round(80 * i / pdf.numPages), `Loading page ${i} of ${pdf.numPages}...`);
+        }
+        document.getElementById('page-preview-container').style.display = 'block';
+        setProgress('delete-pages', 100, `✅ ${pdf.numPages} pages loaded. Click to select pages for deletion.`);
+    } catch(e) {
+        setProgress('delete-pages', 0, '❌ Error rendering pages: ' + e.message);
+        console.error(e);
+    }
+}
+
+function togglePageSelection(thumb, pageNum) {
+    if (selectedPages.has(pageNum)) {
+        selectedPages.delete(pageNum);
+        thumb.classList.remove('selected');
+    } else {
+        selectedPages.add(pageNum);
+        thumb.classList.add('selected');
+    }
+    document.getElementById('del-selected-count').textContent = selectedPages.size;
+}
+
+function selectAllPages() {
+    document.querySelectorAll('.page-thumb').forEach(t => {
+        const n = parseInt(t.dataset.page);
+        selectedPages.add(n); t.classList.add('selected');
+    });
+    document.getElementById('del-selected-count').textContent = selectedPages.size;
+}
+
+function clearPageSelection() {
+    selectedPages.clear();
+    document.querySelectorAll('.page-thumb').forEach(t => t.classList.remove('selected'));
+    document.getElementById('del-selected-count').textContent = '0';
+}
+
+async function deleteSelectedPages() {
+    if (!deletePdfBytes) { alert('Please upload a PDF first!'); return; }
+    if (!selectedPages.size) { alert('Please select at least one page to delete!'); return; }
+    if (selectedPages.size >= totalPageCount) { alert('Cannot delete all pages! Keep at least one page.'); return; }
+    const btn = document.getElementById('btn-delete-pages');
+    btn.disabled = true;
+    setProgress('delete-pages', 10, `🗑️ Removing ${selectedPages.size} page(s)...`);
+    try {
+        const { PDFDocument } = PDFLib;
+        const doc = await PDFDocument.load(deletePdfBytes);
+        // Sort descending so indices don't shift
+        const pagesToDelete = Array.from(selectedPages).sort((a,b) => b - a);
+        pagesToDelete.forEach(p => doc.removePage(p - 1)); // pdf-lib is 0-indexed
+        setProgress('delete-pages', 80, '💾 Saving...');
+        const pdfBytes = await doc.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        document.getElementById('dl-delete-pages').onclick = () => { const a = document.createElement('a'); a.href = url; a.download = 'edited.pdf'; a.click(); };
+        document.getElementById('result-label-delete-pages').textContent = `Removed ${selectedPages.size} page(s) · ${totalPageCount - selectedPages.size} pages remaining`;
+        showResult('delete-pages', `✅ Removed ${selectedPages.size} page(s) successfully.`);
+    } catch(e) {
+        setProgress('delete-pages', 0, '❌ Error: ' + e.message);
+        console.error(e);
+    }
+    btn.disabled = false;
+}
+
+// ═══════════════════════════════════════════════════════════
+// TOOL 5 — Add Image to PDF
+// ═══════════════════════════════════════════════════════════
+let addPdfBytes = null, addImageBytes = null, addImageType = '';
+
+setupDropZone('dz-add-pdf', 'input-add-pdf', async files => {
+    const f = files.find(f => f.type === 'application/pdf' || f.name.endsWith('.pdf'));
+    if (!f) return;
+    addPdfBytes = await f.arrayBuffer();
+    document.getElementById('list-add-pdf').innerHTML = '';
+    renderFileItem('list-add-pdf', f, () => { addPdfBytes = null; });
+});
+
+setupDropZone('dz-add-img', 'input-add-img', async files => {
+    const f = files.find(f => f.type === 'image/png' || f.type === 'image/jpeg');
+    if (!f) { alert('Only PNG and JPEG images are supported.'); return; }
+    addImageBytes = await f.arrayBuffer();
+    addImageType = f.type;
+    document.getElementById('list-add-img').innerHTML = '';
+    renderFileItem('list-add-img', f, () => { addImageBytes = null; addImageType = ''; });
+});
+
+document.getElementById('add-img-position').addEventListener('change', function() {
+    document.getElementById('add-img-page-group').style.display = this.value === 'custom' ? 'flex' : 'none';
+});
+
+async function addImageToPDF() {
+    if (!addPdfBytes) { alert('Please upload a base PDF!'); return; }
+    if (!addImageBytes) { alert('Please upload an image to insert!'); return; }
+    const btn = document.getElementById('btn-add-image');
+    btn.disabled = true;
+    setProgress('add-image', 10, '📄 Loading PDF...');
+    try {
+        const { PDFDocument, PageSizes } = PDFLib;
+        const doc = await PDFDocument.load(addPdfBytes);
+        let img;
+        if (addImageType === 'image/png') img = await doc.embedPng(addImageBytes);
+        else img = await doc.embedJpg(addImageBytes);
+        setProgress('add-image', 40, '🖼️ Embedding image...');
+        const pageSizeKey = document.getElementById('add-img-page-size').value;
+        let pw, ph;
+        if (pageSizeKey === 'fit') { pw = img.width; ph = img.height; }
+        else if (pageSizeKey === 'a4') { [pw, ph] = PageSizes ? PageSizes.A4 : [595.28, 841.89]; }
+        else { pw = 612; ph = 792; }
+        const newPage = doc.addPage([pw, ph]);
+        const scale = Math.min(pw / img.width, ph / img.height);
+        const dw = img.width * scale, dh = img.height * scale;
+        newPage.drawImage(img, { x: (pw - dw)/2, y: (ph - dh)/2, width: dw, height: dh });
+        // Move page to correct position
+        const position = document.getElementById('add-img-position').value;
+        const totalPages = doc.getPageCount();
+        if (position === 'start') {
+            const pages2 = await doc.copyPages(doc, [totalPages - 1]);
+            // Restructure by copying all pages into new doc in right order
+            const newDoc = await PDFDocument.create();
+            const imgPageCopied = await newDoc.copyPages(doc, [totalPages - 1]);
+            newDoc.addPage(imgPageCopied[0]);
+            for (let i = 0; i < totalPages - 1; i++) {
+                const [p] = await newDoc.copyPages(doc, [i]);
+                newDoc.addPage(p);
+            }
+            setProgress('add-image', 80, '💾 Saving...');
+            const finalBytes = await newDoc.save();
+            const blob = new Blob([finalBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            document.getElementById('dl-add-image').onclick = () => { const a = document.createElement('a'); a.href = url; a.download = 'with_image.pdf'; a.click(); };
+        } else if (position === 'custom') {
+            const insertAfter = parseInt(document.getElementById('add-img-page-num').value) || 1;
+            const clampedInsert = Math.min(Math.max(insertAfter, 0), totalPages - 1);
+            const newDoc = await PDFDocument.create();
+            for (let i = 0; i < totalPages; i++) {
+                const [p] = await newDoc.copyPages(doc, [i]);
+                newDoc.addPage(p);
+                if (i === clampedInsert - 1) {
+                    const [imgP] = await newDoc.copyPages(doc, [totalPages - 1]);
+                    newDoc.addPage(imgP);
+                }
+            }
+            setProgress('add-image', 80, '💾 Saving...');
+            const finalBytes = await newDoc.save();
+            const blob = new Blob([finalBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            document.getElementById('dl-add-image').onclick = () => { const a = document.createElement('a'); a.href = url; a.download = 'with_image.pdf'; a.click(); };
+        } else {
+            // End — already added at end
+            setProgress('add-image', 80, '💾 Saving...');
+            const finalBytes = await doc.save();
+            const blob = new Blob([finalBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            document.getElementById('dl-add-image').onclick = () => { const a = document.createElement('a'); a.href = url; a.download = 'with_image.pdf'; a.click(); };
+        }
+        document.getElementById('result-label-add-image').textContent = `Image added · ${doc.getPageCount()} total pages`;
+        showResult('add-image', '✅ Image inserted into PDF successfully!');
+    } catch(e) {
+        setProgress('add-image', 0, '❌ Error: ' + e.message);
+        console.error(e);
+    }
+    btn.disabled = false;
+}
+
+// ── Grid responsive for add-image ────────────────────
+const addImgGrid = document.querySelector('.add-img-grid');
+if (addImgGrid) {
+    function updateAddImgGrid() {
+        addImgGrid.style.gridTemplateColumns = window.innerWidth < 600 ? '1fr' : '1fr 1fr';
+    }
+    updateAddImgGrid();
+    window.addEventListener('resize', updateAddImgGrid);
+}
+</script>
+</body>
+</html>
