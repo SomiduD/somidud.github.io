@@ -2,7 +2,7 @@
 // ============================================================
 // CONSTANTS & STATE
 // ============================================================
-const MAX_PINNED = 6;
+const MAX_PINNED = 7;
 let ALL_PROJECTS = [];
 let pinnedProjects = [];
 let MASTER_CV_DATA = {};
@@ -17,87 +17,109 @@ let snakeTimer = null;
 const CELL = 16, COLS = 24, ROWS = 18;
 let snake = [], dir = { x: 1, y: 0 }, nextDir = { x: 1, y: 0 }, food = {}, score = 0;
 
-// Skills matrix with icons — matches the original deployed site
-const SKILLS_DATA = {
-    'Mobile & Cross-Platform': [
-        { icon: '🐦', name: 'Flutter' }, { icon: '🎯', name: 'Dart' },
-        { icon: '🔥', name: 'Firebase' }, { icon: '🗺️', name: 'Google Maps API' },
-    ],
-    'Web & Backend': [
-        { icon: '🌐', name: 'HTML/CSS' }, { icon: '⚡', name: 'JavaScript' },
-        { icon: '🐘', name: 'PHP' }, { icon: '🗄️', name: 'SQL Server' },
-        { icon: '🐬', name: 'MySQL' }, { icon: '⚛️', name: 'React' },
-        { icon: '☕', name: 'Java' }, { icon: '🔗', name: 'REST APIs' },
-    ],
-    'Embedded Systems & IoT': [
-        { icon: '🤖', name: 'Arduino' }, { icon: '📡', name: 'ESP32/ESP8266' },
-        { icon: '🍓', name: 'Raspberry Pi' }, { icon: '⚙️', name: 'C/C++' },
-        { icon: '🐍', name: 'Python' }, { icon: '📶', name: 'MQTT' },
-    ],
-    'Dev Tools & Design': [
-        { icon: '🐙', name: 'Git & GitHub' }, { icon: '🎨', name: 'UI/UX Design' },
-        { icon: '🗃️', name: 'SSMS' }, { icon: '🔀', name: 'DB Triggers' },
-        { icon: '📊', name: 'Data Migration' }, { icon: '🐳', name: 'Docker' },
-        { icon: '📉', name: 'R' },
-    ]
-};
-
-// Default project catalog (shown when master_cv_data.json is unavailable)
-const DEFAULT_PROJECTS = [
-    { id: 1, title: 'Greenify', category: 'Sustainability • Mobile App', description: 'An eco-focused tracking Mobile Application built to monitor environmental impact metrics, encouraging sustainable lifestyle choices through localized data insight analytics.', tags: ['Flutter', 'Firebase', 'Dart', 'Charts'], youtubeUrl: '', github: 'https://github.com/somidud', live: '#' },
-    { id: 2, title: 'PlannGo', category: 'Architecture Orchestration • Mobile', description: 'A full-scale native tourism orchestration Mobile Application featuring asynchronous real-time data streaming, client authentication states, and interactive route mapping.', tags: ['Flutter', 'Firebase', 'Maps API', 'Dart'], youtubeUrl: '', github: 'https://github.com/somidud', live: '#' },
-    { id: 3, title: 'UtilityOne', category: 'Relational Engines • Mobile App', description: 'A centralized utility operational platform running custom server database triggers, strict relation mapping, and isolated application access roles.', tags: ['PHP', 'SQL Server', 'HTML/CSS', 'SSMS'], youtubeUrl: '', github: 'https://github.com/somidud', live: '#' },
-    { id: 4, title: 'Research Shuffle', category: 'Data Processing • Web Engine', description: 'A collaborative research management pipeline designed to sort, categorize, and cross-reference academic documentation datasets with advanced indexing.', tags: ['PHP', 'React', 'Docker', 'R'], youtubeUrl: '', github: 'https://github.com/somidud', live: '#' },
-    { id: 5, title: 'IoT Fire Fighting Robot', category: 'Embedded Firmware • Robotics', description: 'An automated emergency response node integrating active thermal sensor matrices, real-time telemetry, and physical flame-retardant actuation loops.', tags: ['Arduino', 'C++', 'ESP32', 'Sensors'], youtubeUrl: '', github: 'https://github.com/somidud', live: '#' },
-    { id: 6, title: 'Smart Home Hub', category: 'IoT Architecture • Embedded', description: 'A centralized IoT control system with real-time sensor data streaming and automated device management through a responsive web dashboard with MQTT protocol.', tags: ['Raspberry Pi', 'Python', 'MQTT', 'Node.js'], youtubeUrl: '', github: 'https://github.com/somidud', live: '#' },
+// Skill icons (looked up by keyword so edited/added skills still get an icon)
+const SKILL_ICON_RULES = [
+    ['python', '🐍'], ['c#', '🎼'], ['dart', '🎯'], ['php', '🐘'], ['html', '🌐'], ['c++', '⚙️'], ['typescript', '🔷'], ['javascript', '⚡'],
+    ['react', '⚛️'], ['next', '▲'], ['vite', '⚡'], ['tailwind', '🌬️'], ['flutter', '🐦'],
+    ['node', '🟢'], ['express', '🚂'], ['socket', '🔌'], ['jwt', '🔑'], ['mcp', '🧩'], ['model context', '🧩'],
+    ['mongo', '🍃'], ['firebase', '🔥'], ['sql server', '🗄️'], ['sqlite', '🪶'], ['schema', '📐'], ['mysql', '🐬'],
+    ['docker', '🐳'], ['github actions', '🤖'], ['git', '🐙'], ['playwright', '🎭'], ['devtools', '🧪'], ['cdp', '🧪'],
+    ['ai sdk', '✨'], ['gemini', '💎'], ['machine learning', '🧠'], ['esp32', '📡'], ['iot', '📶'], ['arduino', '🤖'], ['raspberry', '🍓'],
+    ['curation', '🗂️'], ['annotation', '🏷️'], ['validation', '✅'], ['ui/ux', '🎨'], ['design', '🎨'], ['figma', '🎨'], ['java', '☕'], ['r', '📉']
 ];
-
-// ============================================================
-// MASTER DATA INIT
-// ============================================================
-async function initMasterData() {
-    try {
-        const res = await fetch('master_cv_data.json');
-        if (!res.ok) throw new Error('JSON not found');
-        MASTER_CV_DATA = await res.json();
-        ALL_PROJECTS = MASTER_CV_DATA.projects.map(p => ({
-            id: p.id, title: p.name, category: p.category,
-            description: p.description, tags: p.technologies,
-            youtubeUrl: '', github: 'https://github.com/somidud', live: '#'
-        }));
-        // Pad with default projects if fewer than 6
-        DEFAULT_PROJECTS.forEach(dp => {
-            if (!ALL_PROJECTS.find(p => p.id === dp.id)) ALL_PROJECTS.push(dp);
-        });
-    } catch (e) {
-        console.warn('master_cv_data.json unavailable — using defaults');
-        ALL_PROJECTS = [...DEFAULT_PROJECTS];
-        MASTER_CV_DATA = buildFallbackCVData();
-    }
-    loadUserProjects();
-    pinnedProjects = loadPinnedProjects();
-    renderPinnedGrid();
-    renderTimeline();
-    renderSkillsGrid();
+function skillIcon(name) {
+    const n = String(name).toLowerCase();
+    for (const [k, icon] of SKILL_ICON_RULES) { if (k.length > 1 ? n.includes(k) : n === k) return icon; }
+    return '🔹';
+}
+function esc(s) {
+    return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-function buildFallbackCVData() {
-    return {
-        personal: { name: 'Somidu Dilankara', headline: 'Full-Stack Software Engineer, IoT Architect, and Computer Science Scholar', email: 'somidudilan2001@gmail.com', location: 'Gampaha, Sri Lanka', linkedin: 'linkedin.com/in/somidu-dilankara-aaa819242', github: 'github.com/somidud', facebook: 'facebook.com/share/1LGZ6LKfCR/' },
-        education: [
-            { institution: 'NSBM Green University / Plymouth University', degree: 'BSc (Hons) Computer Science / Software Engineering', period: '2022 – Present', details: 'Advanced algorithms, OOP, software engineering principles, and distributed architectures.' },
-            { institution: 'University of Moratuwa', degree: 'Trainee Full-Stack Web Developer', period: '2023', details: 'Production-grade backend patterns, client/server rendering, and database integration.' },
-            { institution: 'University of Colombo', degree: 'Advanced Certificate – Immunology & Molecular Biology', period: '2022', details: 'Computational bio-informatics, genetic data analysis, scientific research methodologies.' },
-            { institution: 'Google Digital Garage', degree: 'Certified Digital Marketer', period: '2021', details: 'Data-driven analytics, search optimization, and modern conversion frameworks.' },
-            { institution: 'NIBM', degree: 'Advanced Certificate in English / Computing Foundations', period: '2021', details: 'Technical writing, presentations, and core computer science fundamentals.' },
-            { institution: 'ESOFT Metro Campus', degree: 'Diploma in IT AND Diploma in English', period: '2020', details: 'Networking essentials, hardware concepts, professional communications.' },
-            { institution: 'Bandaranayake College, Gampaha', degree: 'Secondary Studies', period: '– 2019', details: 'Science and mathematics streams.' },
-            { institution: 'Anura Junior Model School, Yakkala', degree: 'Primary Education', period: '– 2012', details: 'Foundational primary curriculum.' },
-        ],
-        skills: { software_web: ['Flutter', 'Dart', 'React', 'PHP', 'Java', 'Python'], database_infrastructure: ['Firebase Core', 'SQL Server / SSMS', 'Docker', 'Database Triggers', 'Data Migration & Partitioning'], hardware_iot: ['ESP32', 'Arduino', 'Raspberry Pi', '3-Pin Sensors', 'IoT Architecture'], tools_design: ['Git/GitHub Pro', 'Figma UI/UX Layout Design', 'R'] },
-        projects: DEFAULT_PROJECTS.map(p => ({ id: p.id, name: p.title, category: p.category, description: p.description, technologies: p.tags })),
-        summary: 'Computer Science undergraduate at NSBM Green University with 3+ years of hands-on development experience. Specializing in crafting elegant, scalable digital architectures across mobile, web, and embedded hardware domains.'
-    };
+// ============================================================
+// MASTER CV DATA (single source of truth: site + chatbot + CV generator)
+// ============================================================
+const CV_STORE_KEY = 'cvDataOverride';
+function cloneData(o) { return JSON.parse(JSON.stringify(o)); }
+function getDefaultCV() { return cloneData(window.CV_DEFAULT || { personal: {}, skills: {}, projects: [], education: [], experience: [] }); }
+function loadCVOverride() {
+    try { const s = localStorage.getItem(CV_STORE_KEY); if (s) return JSON.parse(s); } catch (e) { }
+    return null;
+}
+function saveCVOverride() { localStorage.setItem(CV_STORE_KEY, JSON.stringify(MASTER_CV_DATA)); }
+
+function projectsFromCV() {
+    return (MASTER_CV_DATA.projects || []).map((p, i) => ({
+        id: p.id ?? (Date.now() + i), title: p.name || p.title || 'Untitled', category: p.category || '',
+        description: p.description || '', tags: p.technologies || p.tags || [],
+        youtubeUrl: p.youtubeUrl || '', github: p.github || 'https://github.com/somidud', live: p.live || '#',
+        userAdded: !!p.userAdded
+    }));
+}
+
+// Writes the site's project list back into the CV data so website & CV always agree
+function persistProjectsToCV() {
+    MASTER_CV_DATA.projects = ALL_PROJECTS.map(p => ({
+        id: p.id, name: p.title, category: p.category, description: p.description, technologies: p.tags,
+        youtubeUrl: p.youtubeUrl, github: p.github, live: p.live, userAdded: !!p.userAdded
+    }));
+    saveCVOverride();
+}
+
+function refreshSiteFromCV() {
+    ALL_PROJECTS = projectsFromCV();
+    pinnedProjects = loadPinnedProjects().filter(id => ALL_PROJECTS.some(p => p.id === id));
+    if (!pinnedProjects.length) pinnedProjects = ALL_PROJECTS.slice(0, MAX_PINNED).map(p => p.id);
+    renderPinnedGrid();
+    renderTimeline();
+    renderExperience();
+    renderSkillsGrid();
+    renderAboutBits();
+}
+
+async function initMasterData() {
+    let base;
+    try {
+        const res = await fetch('master_cv_data.json?v=' + Date.now());
+        if (!res.ok) throw new Error('JSON not found');
+        base = await res.json();
+    } catch (e) {
+        console.warn('master_cv_data.json unavailable — using bundled defaults');
+        base = getDefaultCV();
+    }
+    MASTER_CV_DATA = loadCVOverride() || base;
+    refreshSiteFromCV();
+}
+
+function renderAboutBits() {
+    const p = MASTER_CV_DATA.personal || {};
+    const set = (id, v) => { const el = document.getElementById(id); if (el && v !== undefined) el.textContent = v; };
+    set('stat-projects', ALL_PROJECTS.length + '+');
+    set('stat-skills', Object.values(MASTER_CV_DATA.skills || {}).flat().length + '+');
+    set('about-bio', MASTER_CV_DATA.summary || '');
+    set('about-location', p.location);
+    set('contact-location', p.location);
+    set('contact-phone', p.phone);
+    set('contact-email', p.email);
+    const phoneLink = document.getElementById('about-phone-link');
+    if (phoneLink && p.phone) { phoneLink.textContent = p.phone; phoneLink.href = 'tel:' + p.phone.replace(/[^+\d]/g, ''); }
+    const tel = document.getElementById('contact-phone-link');
+    if (tel && p.phone) { tel.textContent = p.phone; tel.href = 'tel:' + p.phone.replace(/[^+\d]/g, ''); }
+}
+
+function renderExperience() {
+    const wrap = document.getElementById('exp-wrapper');
+    if (!wrap) return;
+    const exp = MASTER_CV_DATA.experience || [];
+    wrap.innerHTML = exp.length ? exp.map((e, i) => `
+        <div class="exp-item reveal visible">
+            <div class="exp-dot"></div>
+            <div class="exp-card">
+                <div class="exp-top"><h3>${esc(e.role)}</h3><span class="exp-period">${esc(e.period)}</span></div>
+                <div class="exp-org">${esc(e.organization)}</div>
+                <p>${esc(e.details)}</p>
+            </div>
+        </div>`).join('') : '<p style="color:var(--text-muted)">No experience added yet.</p>';
 }
 
 // ============================================================
@@ -152,7 +174,7 @@ const STARTUP_WORDS = ['Hello 👋', 'ආයුබෝවන් 🙏', 'வணக
 function initTypewriter() {
     const el = document.getElementById('typewriter-text');
     if (!el) return;
-    const titles = ['Full-Stack Software Engineer', 'IoT Architect', 'Computer Science Scholar', 'Flutter & Mobile Developer', 'Java Backend Developer', 'React Developer'];
+    const titles = ['Full-Stack Software Engineer', 'AI & IoT Developer', 'Computer Science Undergraduate', 'Flutter & Mobile Developer', 'Next.js & React Developer', 'Automation & RPA Builder'];
     let idx = 0, charIdx = 0, deleting = false;
     function tick() {
         const current = titles[idx];
@@ -325,14 +347,14 @@ function toggleAccordion(header) {
 function renderSkillsGrid() {
     const container = document.getElementById('skills-container');
     if (!container) return;
-    container.innerHTML = Object.entries(SKILLS_DATA).map(([cat, skills]) => `
+    container.innerHTML = Object.entries(MASTER_CV_DATA.skills || {}).map(([cat, skills]) => `
         <div class="reveal">
-            <div class="stack-cat-title">${cat}</div>
+            <div class="stack-cat-title">${esc(cat)}</div>
             <div class="stack-grid">
                 ${skills.map(s => `
                     <div class="stack-item">
-                        <span class="stack-icon">${s.icon}</span>
-                        <span>${s.name}</span>
+                        <span class="stack-icon">${skillIcon(s)}</span>
+                        <span>${esc(s)}</span>
                     </div>`).join('')}
             </div>
         </div>`).join('');
@@ -436,7 +458,7 @@ function togglePin(id) {
         pinnedProjects.splice(idx, 1);
     } else {
         if (pinnedProjects.length >= MAX_PINNED) {
-            showToast('⚠️ Maximum 6 deployments can be pinned!', 'warning');
+            showToast(`⚠️ Maximum ${MAX_PINNED} deployments can be pinned!`, 'warning');
             return;
         }
         pinnedProjects.push(id);
@@ -489,7 +511,7 @@ function submitNewProject() {
     const newId = Date.now();
     const proj = { id: newId, title, category, description, tags, youtubeUrl, github, live, userAdded: true };
     ALL_PROJECTS.push(proj);
-    saveUserProjects();
+    saveUserProjects(); persistProjectsToCV();
     if (shouldPin && pinnedProjects.length < MAX_PINNED) { pinnedProjects.push(newId); savePinnedProjects(pinnedProjects); }
     closeAddProject();
     renderPinnedGrid();
@@ -503,7 +525,7 @@ function deleteProject(id) {
     ALL_PROJECTS.splice(ALL_PROJECTS.findIndex(p => p.id === id), 1);
     pinnedProjects = pinnedProjects.filter(pid => pid !== id);
     savePinnedProjects(pinnedProjects);
-    saveUserProjects();
+    saveUserProjects(); persistProjectsToCV();
     renderPinnedGrid();
     renderModalGrid();
     showToast(`🗑️ "${proj.title}" removed`, 'warning');
@@ -553,6 +575,7 @@ function saveEditProject() {
     const wasUserAdded = ALL_PROJECTS[idx].userAdded;
     ALL_PROJECTS[idx] = { id, title, category, description, tags, youtubeUrl, github, live, userAdded: wasUserAdded };
     if (wasUserAdded) saveUserProjects();
+    persistProjectsToCV();
     closeEditProject();
     renderPinnedGrid();
     const modalOpen = document.getElementById('modal-overlay')?.classList.contains('open');
@@ -645,266 +668,6 @@ async function changeAdminPassword() {
 }
 
 // ============================================================
-// CHATBOT "CHARACTER" / HERMIONE
-// ============================================================
-function toggleChat() {
-    chatOpen = !chatOpen;
-    document.getElementById('chat-panel')?.classList.toggle('open', chatOpen);
-    // Animate the character widget
-    document.getElementById('chat-char-widget')?.classList.toggle('chat-open', chatOpen);
-    if (chatOpen) {
-        hideSpeechBubble();
-        setTimeout(() => document.getElementById('chat-input')?.focus(), 300);
-    }
-}
-
-function showSpeechBubble(text, duration = 4000) {
-    if (chatOpen) return; // Don't show bubble when chat is already open
-    const bubble = document.getElementById('char-speech-bubble');
-    const bubbleText = document.getElementById('char-bubble-text');
-    if (!bubble) return;
-    if (bubbleText) bubbleText.textContent = text;
-    bubble.classList.add('visible');
-    clearTimeout(window._bubbleTimer);
-    window._bubbleTimer = setTimeout(() => bubble.classList.remove('visible'), duration);
-}
-
-function hideSpeechBubble() {
-    clearTimeout(window._bubbleTimer);
-    document.getElementById('char-speech-bubble')?.classList.remove('visible');
-}
-
-function speakAvatar(talking) {
-    document.querySelector('.chat-avatar-container')?.classList.toggle('speaking', talking);
-}
-
-function addChatMessage(role, content) {
-    const container = document.getElementById('chat-messages');
-    const div = document.createElement('div');
-    div.className = `msg ${role}`;
-    div.innerHTML = `<div class="msg-bubble">${content}</div>`;
-    container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
-}
-
-function showTypingIndicator() {
-    const container = document.getElementById('chat-messages');
-    const div = document.createElement('div');
-    div.className = 'msg assistant'; div.id = 'typing-indicator';
-    div.innerHTML = `<div class="msg-bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
-    container.appendChild(div); container.scrollTop = container.scrollHeight;
-}
-
-function removeTypingIndicator() { document.getElementById('typing-indicator')?.remove(); }
-
-async function sendChatMessage() {
-    const inp = document.getElementById('chat-input');
-    const txt = inp?.value.trim(); if (!txt) return;
-    if (inp) { inp.value = ''; inp.style.height = 'auto'; }
-    addChatMessage('user', txt);
-    chatHistory.push({ role: 'user', content: txt });
-    showTypingIndicator(); speakAvatar(true);
-    setTimeout(() => {
-        removeTypingIndicator(); speakAvatar(false);
-        const reply = getHermioneResponse(txt);
-        addChatMessage('assistant', reply);
-        chatHistory.push({ role: 'assistant', content: reply });
-    }, 1200 + Math.random() * 600);
-}
-
-function getHermioneResponse(q) {
-    const lower = q.toLowerCase();
-    const p = MASTER_CV_DATA.personal || {};
-    if (lower.match(/^(hi|hello|hey|greet)/)) return `Hello! 👋 I'm Hermione, <strong>Somidu Dilankara's</strong> personal AI assistant. I can tell you about his skills, education, projects, and availability. What would you like to know?`;
-    if (lower.includes('skill') || lower.includes('tech') || lower.includes('program') || lower.includes('know')) {
-        return `⚡ Somidu's core competencies include:<br>• <strong>Mobile:</strong> Flutter, Dart, Firebase<br>• <strong>Web/Backend:</strong> React, PHP, Java, JavaScript<br>• <strong>Database:</strong> SQL Server, MySQL, Docker<br>• <strong>IoT/Embedded:</strong> ESP32, Arduino, Raspberry Pi<br>• <strong>Design Tools:</strong> Figma, R, Git/GitHub`;
-    }
-    if (lower.includes('project') || lower.includes('deploy') || lower.includes('built') || lower.includes('work')) {
-        return `🚀 Selected deployments:<br>${ALL_PROJECTS.slice(0, 5).map(p => `• <strong>${p.title}</strong> — ${p.category}`).join('<br>')}`;
-    }
-    if (lower.includes('education') || lower.includes('study') || lower.includes('university') || lower.includes('degree') || lower.includes('school')) {
-        return `🎓 Academic highlights:<br>• <strong>NSBM Green University</strong> — BSc Computer Science (Ongoing)<br>• <strong>University of Moratuwa</strong> — Full-Stack Web Dev<br>• <strong>Google Digital Garage</strong> — Certified Digital Marketer<br>+ more certifications`;
-    }
-    if (lower.includes('contact') || lower.includes('email') || lower.includes('reach') || lower.includes('hire')) {
-        return `📧 You can contact Somidu at:<br><strong>${p.email || 'somidudilan2001@gmail.com'}</strong><br>🔗 LinkedIn: ${p.linkedin || 'linkedin.com/in/somidu-dilankara-aaa819242'}<br>💼 He's open to internships, freelance &amp; full-time roles!`;
-    }
-    if (lower.includes('location') || lower.includes('where') || lower.includes('from') || lower.includes('country')) {
-        return `📍 Somidu is based in <strong>Gampaha, Sri Lanka</strong>.`;
-    }
-    if (lower.includes('available') || lower.includes('intern') || lower.includes('job') || lower.includes('free')) {
-        return `💼 Yes! Somidu is <strong>actively open</strong> to internships, freelance collaborations, and full-time roles in software development and engineering.`;
-    }
-    return `I don't have that specific information in my knowledge base. Please contact Somidu directly at <strong>${p.email || 'somidudilan2001@gmail.com'}</strong> for a detailed conversation!`;
-}
-
-// ============================================================
-// AI CV GENERATOR
-// ============================================================
-function openCvModal() {
-    const overlay = document.getElementById('cv-modal-overlay');
-    overlay?.classList.add('open');
-    document.body.classList.add('modal-open');
-    const status = document.getElementById('cv-status');
-    if (status) status.textContent = '';
-    document.getElementById('cv-download-zone')?.style && (document.getElementById('cv-download-zone').style.display = 'none');
-    document.getElementById('cv-progress-bar')?.style && (document.getElementById('cv-progress-bar').style.display = 'none');
-    const btn = document.getElementById('cv-gen-btn');
-    if (btn) { btn.disabled = false; btn.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Generate &amp; Download PDF`; }
-    generatedCVHTML = null;
-    document.querySelectorAll('.cv-chip').forEach(c => c.classList.remove('selected'));
-    const inp = document.getElementById('cv-role-input'); if (inp) inp.value = '';
-    setTimeout(() => inp?.focus(), 350);
-}
-
-function closeCvModal() {
-    document.getElementById('cv-modal-overlay')?.classList.remove('open');
-    document.body.classList.remove('modal-open');
-}
-
-function selectChip(el, role) {
-    document.querySelectorAll('.cv-chip').forEach(c => c.classList.remove('selected'));
-    el.classList.add('selected');
-    const inp = document.getElementById('cv-role-input'); if (inp) inp.value = role;
-}
-
-async function generateCV() {
-    const role = document.getElementById('cv-role-input')?.value.trim();
-    if (!role) { showToast('⚠️ Please specify a target role first!', 'warning'); return; }
-    currentCVRole = role;
-    const btn = document.getElementById('cv-gen-btn');
-    const progBar = document.getElementById('cv-progress-bar');
-    const progFill = document.getElementById('cv-progress-fill');
-    const status = document.getElementById('cv-status');
-    btn.disabled = true; btn.textContent = '⏳ Generating...';
-    progBar.style.display = 'block'; progFill.style.width = '0%';
-    const steps = [
-        [15, '🔍 Analyzing qualifications...'],
-        [40, `🧠 Optimizing for "${role}"...`],
-        [70, '📝 Re-ranking skills & projects...'],
-        [90, '✨ Composing tailored layout...'],
-        [100, '✅ Ready to download!']
-    ];
-    for (const [pct, msg] of steps) {
-        await new Promise(r => setTimeout(r, 700));
-        progFill.style.width = pct + '%';
-        if (status) status.textContent = msg;
-    }
-    generatedCVHTML = buildCVTemplate(localOptimizeCV(MASTER_CV_DATA, role), role);
-    document.getElementById('cv-download-zone').style.display = 'flex';
-    const label = document.getElementById('cv-download-label');
-    if (label) label.textContent = `Optimized for: ${role}`;
-    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Regenerate`;
-    btn.disabled = false;
-    showToast(`🎉 CV generated for "${role}"!`, 'success');
-}
-
-function localOptimizeCV(data, role) {
-    const r = role.toLowerCase();
-    const optimized = JSON.parse(JSON.stringify(data));
-    const keywords = {
-        frontend: ['JavaScript', 'HTML5', 'CSS3', 'React', 'UI/UX'],
-        mobile: ['Flutter', 'Dart', 'Firebase', 'Maps API'],
-        iot: ['Arduino', 'ESP32', 'Raspberry Pi', 'C++', 'MQTT', 'Python'],
-        java: ['Java', 'Spring', 'Backend'],
-        docker: ['Docker', 'DevOps', 'Cloud'],
-        fullstack: ['PHP', 'MySQL', 'JavaScript', 'Firebase'],
-        data: ['MySQL', 'SQL Server', 'Python', 'R'],
-    };
-    let matchKey = 'fullstack';
-    for (const k of Object.keys(keywords)) { if (r.includes(k)) { matchKey = k; break; } }
-    const rel = keywords[matchKey];
-    if (optimized.projects) {
-        optimized.projects = [...optimized.projects].sort((a, b) => {
-            const sA = (a.technologies || []).filter(t => rel.some(rt => t.toLowerCase().includes(rt.toLowerCase()))).length;
-            const sB = (b.technologies || []).filter(t => rel.some(rt => t.toLowerCase().includes(rt.toLowerCase()))).length;
-            return sB - sA;
-        });
-    }
-    return optimized;
-}
-
-function buildCVTemplate(data, role) {
-    const p = data.personal || MASTER_CV_DATA.personal || {};
-    const edu = data.education || MASTER_CV_DATA.education || [];
-    const projects = data.projects || MASTER_CV_DATA.projects || [];
-    const skills = data.skills || MASTER_CV_DATA.skills || {};
-    const allSkills = Object.values(skills).flat();
-    return `
-    <div style="font-family:'Inter',system-ui,sans-serif;max-width:800px;margin:0 auto;padding:40px 48px;color:#111;background:#fff;line-height:1.55;">
-        <div style="border-bottom:3px solid #00b4cc;padding-bottom:20px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end">
-            <div>
-                <h1 style="margin:0;font-size:28px;font-weight:900;color:#0f0f1a;letter-spacing:-0.03em">${p.name || 'Somidu Dilankara'}</h1>
-                <h3 style="margin:6px 0 0;font-weight:500;font-size:13px;color:#7b2fff">Optimized for: ${role}</h3>
-            </div>
-            <div style="text-align:right;font-size:11px;color:#555;line-height:1.7">
-                <div>${p.email || ''}</div>
-                <div>${p.location || ''}</div>
-                <div>${p.linkedin || ''}</div>
-                <div>${p.github || ''}</div>
-            </div>
-        </div>
-        <div style="margin-bottom:20px">
-            <h2 style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#00b4cc;margin:0 0 8px">Profile Summary</h2>
-            <p style="font-size:12.5px;color:#333;margin:0">${data.summary || MASTER_CV_DATA.summary || ''}</p>
-        </div>
-        <div style="margin-bottom:20px">
-            <h2 style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#00b4cc;margin:0 0 8px">Core Skills</h2>
-            <div style="display:flex;flex-wrap:wrap;gap:5px">${allSkills.map(s => `<span style="font-size:11px;padding:3px 10px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:50px;color:#0369a1">${s}</span>`).join('')}</div>
-        </div>
-        <div style="margin-bottom:20px">
-            <h2 style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#00b4cc;margin:0 0 10px">Key Projects</h2>
-            ${projects.slice(0, 4).map(pr => `
-            <div style="margin-bottom:14px;padding-left:12px;border-left:3px solid #7b2fff">
-                <div style="font-size:13px;font-weight:700">${pr.name || pr.title} <span style="font-weight:400;color:#777;font-size:11px">— ${pr.category}</span></div>
-                <div style="font-size:12px;color:#444;margin:3px 0">${pr.description}</div>
-                <div style="font-size:11px;color:#888">${(pr.technologies || pr.tags || []).join(' • ')}</div>
-            </div>`).join('')}
-        </div>
-        <div style="margin-bottom:20px">
-            <h2 style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#00b4cc;margin:0 0 10px">Education</h2>
-            ${edu.slice(0, 5).map(e => `
-            <div style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start">
-                <div>
-                    <div style="font-size:13px;font-weight:700">${e.institution}</div>
-                    <div style="font-size:12px;color:#555">${e.degree}</div>
-                </div>
-                <div style="font-size:11px;color:#888;flex-shrink:0;margin-left:12px">${e.period}</div>
-            </div>`).join('')}
-        </div>
-        <div style="border-top:1px solid #e0e0e0;padding-top:12px;font-size:10px;color:#aaa;text-align:center;margin-top:24px">
-            Generated by AI CV Generator · ${new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })} · ${p.email || 'somidudilan2001@gmail.com'}
-        </div>
-    </div>`;
-}
-
-function downloadGeneratedCV() {
-    if (!generatedCVHTML) { showToast('⚠️ Please generate the CV first!', 'warning'); return; }
-    const btn = document.getElementById('cv-download-btn');
-    if (btn) { btn.textContent = '⏳ Creating PDF...'; btn.disabled = true; }
-    const container = document.createElement('div');
-    container.innerHTML = generatedCVHTML;
-    container.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:800px;background:#fff;z-index:-1';
-    document.body.appendChild(container);
-    const filename = `CV_SomiduDilankara_${currentCVRole.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
-    html2pdf().set({
-        margin: [8, 8, 8, 8], filename,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['avoid-all', 'css'] }
-    }).from(container.firstChild).save()
-        .then(() => {
-            document.body.removeChild(container);
-            if (btn) { btn.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download PDF`; btn.disabled = false; }
-            showToast('📄 CV downloaded successfully!', 'success');
-        }).catch(err => {
-            document.body.removeChild(container);
-            if (btn) { btn.textContent = '⚠️ Error — Retry'; btn.disabled = false; }
-            console.error(err);
-        });
-}
-
-// ============================================================
 // TERMINAL
 // ============================================================
 (function initTerminalShortcut() {
@@ -936,27 +699,48 @@ const TERMINAL_COMMANDS = {
         termPrint('╔═══════════════════════════════════╗', 'term-prompt-color');
         termPrint('║   Available Commands              ║', 'term-prompt-color');
         termPrint('╚═══════════════════════════════════╝', 'term-prompt-color');
-        [['about', 'Display bio & info'], ['skills', 'List technical competencies'], ['projects', 'Show pinned deployments'], ['contact', 'Display contact info'], ['play', 'Launch Snake mini-game 🎮'], ['clear', 'Clear terminal'], ['help', 'Show this menu']].forEach(([cmd, desc]) => termPrint(`  <span class="term-prompt-color">${cmd.padEnd(10)}</span>— ${desc}`));
+        [['about', 'Display bio & info'], ['skills', 'List technical competencies'], ['projects', 'Show pinned deployments'], ['experience', 'Work history'], ['contact', 'Display contact info'], ['cv', 'Open the CV generator'], ['kavi', 'Say hi to my AI guide'], ['joke', 'Developer joke 😄'], ['coffee', '☕ fuel up'], ['matrix', 'Enter the matrix'], ['party', '🎉 confetti time'], ['whoami', 'Who are you?'], ['play', 'Launch Snake mini-game 🎮'], ['clear', 'Clear terminal'], ['help', 'Show this menu']].forEach(([cmd, desc]) => termPrint(`  <span class="term-prompt-color">${cmd.padEnd(11)}</span>— ${desc}`));
     },
     about: () => {
-        termPrint(''); termPrint(`┌─ <span style="color:#fff">Somidu Dilankara</span> ────────────────────┐`, 'term-info-color');
-        termPrint(`│  Full-Stack Software Engineer & IoT Architect  │`, 'term-info-color');
-        termPrint(`│  📍 Gampaha, Sri Lanka                         │`, 'term-info-color');
-        termPrint(`│  🎓 NSBM Green University — BSc CS             │`, 'term-info-color');
-        termPrint(`│  💼 Open for internships & freelance           │`, 'term-info-color');
-        termPrint(`└─────────────────────────────────────────────────┘`, 'term-info-color'); termPrint('');
+        const p = MASTER_CV_DATA.personal || {};
+        termPrint(''); termPrint(`┌─ <span style="color:#fff">${esc(p.fullName || p.name)}</span> ────┐`, 'term-info-color');
+        termPrint(`│  ${esc(p.headline || '')}`, 'term-info-color');
+        termPrint(`│  📍 ${esc(p.location || '')}`, 'term-info-color');
+        termPrint(`│  🎓 NSBM Green University — BSc (Hons) Computer Science`, 'term-info-color');
+        termPrint(`│  💼 Open for internships & freelance`, 'term-info-color');
+        termPrint(`└────────────────────────────────────────────┘`, 'term-info-color'); termPrint('');
+    },
+    experience: () => {
+        termPrint(''); (MASTER_CV_DATA.experience || []).forEach(e => termPrint(`  💼 <span style="color:#fff">${esc(e.role)}</span> @ ${esc(e.organization)} <span class="term-info-color">(${esc(e.period)})</span>`)); termPrint('');
+    },
+    cv: () => { termPrint('📄 Opening CV generator...', 'term-success-color'); closeTerminal(); openCvModal(); },
+    kavi: () => { termPrint("👋 MMM: \"Hey! Close this terminal and click me - I know everything about Somidu.\"", 'term-success-color'); if (typeof showSpeechBubble === 'function') { closeTerminal(); showSpeechBubble('You called? 😎', 4000); } },
+    joke: () => {
+        const jokes = ['Why do programmers prefer dark mode? Because light attracts bugs. 🐛', 'There are 10 types of people: those who understand binary and those who don\'t.', 'A SQL query walks into a bar, walks up to two tables and asks: "Can I join you?"', '!false — it\'s funny because it\'s true.', 'I would tell you a UDP joke, but you might not get it.', 'My code works. I have no idea why. My code doesn\'t work. I have no idea why.'];
+        termPrint('😄 ' + jokes[Math.floor(Math.random() * jokes.length)], 'term-success-color');
+    },
+    coffee: () => { ['    ( (', '     ) )', '  .______.', '  |      |]', '  \\      /', '   `----\'', ''].forEach(l => termPrint(l.replace(/ /g, '&nbsp;'), 'term-info-color')); termPrint('☕ Caffeine level restored to 100%.', 'term-success-color'); },
+    whoami: () => termPrint('visitor — a very welcome one. 🌟 Try "sudo hire somidu".', 'term-success-color'),
+    sudo: (args) => termPrint(args && args.join(' ') === 'hire somidu' ? '✅ Permission granted! Email somidudilan2001@gmail.com to proceed. 🚀' : '🔒 Nice try. You are not in the sudoers file. This incident will be reported (to a rubber duck 🦆).', 'term-success-color'),
+    party: () => { termPrint('🎉 PARTY MODE!', 'term-success-color'); confettiBlast(); },
+    matrix: () => {
+        document.body.classList.toggle('matrix-mode');
+        termPrint(document.body.classList.contains('matrix-mode') ? '🟩 Wake up, Neo... (type "matrix" again to exit)' : '🔵 Back to reality.', 'term-success-color');
+    },
+    contact: () => {
+        const p = MASTER_CV_DATA.personal || {};
+        termPrint(''); termPrint(`📧 ${esc(p.email)}`, 'term-success-color');
+        termPrint(`📱 ${esc(p.phone)}`, 'term-success-color');
+        termPrint(`🌐 ${esc(p.portfolio)}`, 'term-success-color');
+        termPrint(`🔗 ${esc(p.linkedin)}`, 'term-success-color');
+        termPrint(`🐙 ${esc(p.github)}`, 'term-success-color'); termPrint(`📍 ${esc(p.location)}`, 'term-success-color'); termPrint('');
     },
     skills: () => {
-        termPrint(''); Object.entries(SKILLS_DATA).forEach(([cat, skills]) => { termPrint(`  📁 <span style="color:#fff">${cat}</span>: <span class="term-output-color">${skills.map(s => s.name).join('  •  ')}</span>`); }); termPrint('');
+        termPrint(''); Object.entries(MASTER_CV_DATA.skills || {}).forEach(([cat, skills]) => { termPrint(`  📁 <span style="color:#fff">${esc(cat)}</span>: <span class="term-output-color">${skills.map(esc).join('  •  ')}</span>`); }); termPrint('');
     },
     projects: () => {
         termPrint(''); termPrint('🚀 Pinned Deployments:', 'term-success-color');
         ALL_PROJECTS.filter(p => pinnedProjects.includes(p.id)).forEach((p, i) => termPrint(`  [${i + 1}] <span style="color:#fff">${p.title}</span> — ${p.category}`)); termPrint('');
-    },
-    contact: () => {
-        termPrint(''); termPrint('📧 somidudilan2001@gmail.com', 'term-success-color');
-        termPrint('🔗 linkedin.com/in/somidu-dilankara-aaa819242', 'term-success-color');
-        termPrint('🐙 github.com/somidud', 'term-success-color'); termPrint('📍 Gampaha, Sri Lanka', 'term-success-color'); termPrint('');
     },
     clear: () => termClear(),
     play: () => { termClear(); termPrint('🎮 <span style="color:#fff">SNAKE</span> — Arrow keys to play. Press <span class="term-info-color">Q</span> to quit.', ''); startSnakeGame(); }
@@ -1116,7 +900,7 @@ window.addEventListener('scroll', () => {
     const nav = document.getElementById('nav');
     if (window.scrollY > 30) nav?.classList.add('scrolled');
     else nav?.classList.remove('scrolled');
-    const sections = ['hero', 'about', 'skills', 'deployments', 'contact'];
+    const sections = ['hero', 'about', 'experience', 'skills', 'deployments', 'contact'];
     let current = '';
     sections.forEach(id => {
         const el = document.getElementById(id);
@@ -1206,14 +990,15 @@ window.addEventListener('DOMContentLoaded', async () => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleChat(); }
     });
 
-    // Speech bubble — show welcome after 2s, then rotate every 45s
-    setTimeout(() => showSpeechBubble('Hi! I\'m your AI assistant \ud83d\udc4b', 5000), 2000);
+    // Speech bubble — show welcome after 2s, then rotate every 30s
+    setTimeout(() => showSpeechBubble('Hey! I\'m MMM 👋 Ask me anything!', 5000), 2000);
     const bubbleMessages = [
-        'Ask me about Somidu\'s projects! \ud83d\ude80',
-        'Need his contact info? \ud83d\udce7',
-        'Want to know his tech stack? \u26a1',
-        'Curious about his education? \ud83c\udf93',
-        'Click me to start chatting! \ud83d\udcac',
+        'Ask me about Somidu\'s projects! 🚀',
+        'Psst… try the Konami code 🎮',
+        'Need his contact info? 📧',
+        'Want to know his tech stack? ⚡',
+        'Ask me for a dev joke! 😄',
+        'Need a tailored CV? I can help! 📄',
     ];
     let bubbleIdx = 0;
     setInterval(() => {
@@ -1221,7 +1006,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             bubbleIdx = (bubbleIdx + 1) % bubbleMessages.length;
             showSpeechBubble(bubbleMessages[bubbleIdx], 4500);
         }
-    }, 45000);
+    }, 30000);
 
     // Master data & canvas & typewriter
     await initMasterData();
@@ -1229,6 +1014,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     initTypewriter();
     initMobileNav();
     initReveal();
+    if (typeof initFunStuff === 'function') initFunStuff();
 
     // Inject extra keyframe CSS
     const style = document.createElement('style');
@@ -1236,12 +1022,6 @@ window.addEventListener('DOMContentLoaded', async () => {
         @keyframes shake { 0%,100%{transform:translateX(0)} 15%{transform:translateX(-6px)} 30%{transform:translateX(6px)} 45%{transform:translateX(-4px)} 60%{transform:translateX(4px)} 75%{transform:translateX(-2px)} 90%{transform:translateX(2px)} }
         @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
         canvas#snake-canvas { border-radius:5px; }
-        .hermione-eyes { animation: hermioneBlink 4s infinite; }
-        @keyframes hermioneBlink { 0%,90%,100%{transform:scaleY(1);} 95%{transform:scaleY(0.1);} }
-        .hermione-head-group { animation: hermioneFloat 3s ease-in-out infinite; }
-        @keyframes hermioneFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-1.5px);} }
-        .chat-avatar-container.speaking .hermione-mouth { animation: hermioneTalk 0.35s ease-in-out infinite alternate; }
-        @keyframes hermioneTalk { 0%{d:path("M 16.5 26.5 Q 20 29 23.5 26.5");} 100%{d:path("M 16.5 26.5 Q 20 30.5 23.5 26.5");} }
     `;
     document.head.appendChild(style);
 });

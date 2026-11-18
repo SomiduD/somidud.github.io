@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Somidu Dilankara – Full-Stack Software Engineer, IoT Architect, and Computer Science Scholar from Gampaha, Sri Lanka.">
-    <meta name="keywords" content="Somidu Dilankara, portfolio, flutter developer, computer science, Sri Lanka, full stack, IoT, Java, React, Docker, R">
+    <meta name="description" content="Somidu Dilankara – Full-Stack Software Engineer | AI & IoT Developer and Computer Science undergraduate from Yakkala, Sri Lanka.">
+    <meta name="keywords" content="Somidu Dilankara, portfolio, flutter developer, computer science, Sri Lanka, full stack, AI, IoT, Next.js, React, Node.js, Docker, Python">
     <title>Somidu Dilankara | Portfolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,6 +34,7 @@
         <ul class="nav-links" role="list">
             <li><a href="#hero" class="nav-link">Home</a></li>
             <li><a href="#about" class="nav-link">About</a></li>
+            <li><a href="#experience" class="nav-link">Experience</a></li>
             <li><a href="#skills" class="nav-link">Skills</a></li>
             <li><a href="#deployments" class="nav-link">Deployments</a></li>
             <li><a href="#contact" class="nav-link">Contact</a></li>
@@ -63,6 +64,7 @@
 <div id="mobile-nav" role="navigation" aria-label="Mobile navigation">
     <a href="#hero">🏠 Home</a>
     <a href="#about">👤 About</a>
+    <a href="#experience">💼 Experience</a>
     <a href="#skills">⚡ Skills</a>
     <a href="#deployments">🚀 Deployments</a>
     <a href="#contact">✉️ Contact</a>
@@ -86,7 +88,7 @@
                 <span id="typewriter-text"></span><span class="typewriter-cursor"></span>
             </div>
             <p class="hero-bio">
-                Specializing in crafting elegant, scalable digital architectures — from native mobile ecosystems and full-stack web engines to autonomous embedded hardware prototypes. Driven by a passion for integrating complex database management, intelligent IoT automations, and premium UI/UX design. Based in Gampaha, Sri Lanka.
+                Full-Stack Software Engineer building scalable web platforms, AI-powered assistants, cross-platform mobile apps and IoT prototypes — from real-time Socket.io systems and MCP-driven agents to ESP32 robots. Detail-oriented, user-centric and always shipping. Based in Yakkala, Sri Lanka.
             </p>
             <div class="hero-actions">
                 <a href="https://linkedin.com/in/somidu-dilankara-aaa819242" target="_blank" class="btn btn-primary hero-social-btn">
@@ -99,7 +101,7 @@
                 </a>
                 <button class="btn btn-outline hero-social-btn" onclick="openCvModal()">
                     <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                    Download CV
+                    Build &amp; Download CV
                 </button>
                 <a href="https://facebook.com/share/1LGZ6LKfCR/" target="_blank" class="btn btn-ghost hero-social-btn">
                     <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
@@ -133,11 +135,11 @@
             <div class="about-card reveal reveal-delay-1">
                 <div class="about-stats">
                     <div class="stat-item">
-                        <div class="stat-num">5+</div>
+                        <div class="stat-num" id="stat-projects">7+</div>
                         <div class="stat-label">Deployments</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-num">18+</div>
+                        <div class="stat-num" id="stat-skills">38+</div>
                         <div class="stat-label">Competencies</div>
                     </div>
                     <div class="stat-item">
@@ -145,23 +147,24 @@
                         <div class="stat-label">Years Coding</div>
                     </div>
                 </div>
-                <p class="about-bio-text">
-                    Computer Science Scholar at NSBM Green University, specializing in full-stack mobile &amp; web applications, IoT embedded systems, and relational database architecture. Passionate about bridging physical hardware with scalable digital intelligence.
+                <p class="about-bio-text" id="about-bio">
+                    Adaptable and detail-oriented Computer Science undergraduate with hands-on experience in full-stack web development, mobile application engineering, and IoT hardware integration.
                 </p>
                 <div class="about-contact-row">
-                    <div class="about-contact-item"><span>📍</span><span>Gampaha, Sri Lanka</span></div>
+                    <div class="about-contact-item"><span>📍</span><span id="about-location">Yakkala, Sri Lanka</span></div>
                     <div class="about-contact-item"><span>🎓</span><span>NSBM Green University</span></div>
                     <div class="about-contact-item"><span>💼</span><span>Open for Roles &amp; Freelance</span></div>
+                    <div class="about-contact-item"><span>📱</span><a id="about-phone-link" href="tel:0715480383" style="color:inherit">071-5480383</a></div>
                     <div class="about-contact-item"><span>📧</span><a href="mailto:somidudilan2001@gmail.com" style="color:inherit">somidudilan2001@gmail.com</a></div>
                 </div>
                 <div style="display:flex;flex-direction:column;gap:0.6rem;margin-top:0.5rem">
-                    <a href="resume.pdf" download class="btn btn-ghost" style="justify-content:center;">
+                    <a href="assets/resume.pdf" download class="btn btn-ghost" style="justify-content:center;">
                         <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                         Download Static CV
                     </a>
                     <button class="btn btn-primary" onclick="openCvModal()" style="justify-content:center;">
                         <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        ✨ Generate Custom AI CV
+                        ✨ Open CV Studio
                     </button>
                 </div>
             </div>
@@ -173,6 +176,18 @@
                 </div>
             </div>
         </div>
+    </div>
+</section>
+
+<!-- EXPERIENCE SECTION -->
+<section id="experience" class="section">
+    <div class="container">
+        <div class="section-header reveal">
+            <p class="section-label">Career</p>
+            <h2 class="section-title">Work Experience</h2>
+            <p class="section-subtitle">Roles where I've applied my design, IT and data skills</p>
+        </div>
+        <div class="exp-wrapper" id="exp-wrapper"></div>
     </div>
 </section>
 
@@ -200,6 +215,7 @@
                 <p class="section-subtitle" id="pinned-subtitle">6 pinned from my project library</p>
             </div>
             <div id="admin-deploy-toolbar">
+                <button class="btn btn-outline btn-sm" onclick="openCvEditor()">📝 Edit CV Data</button>
                 <button class="btn btn-outline btn-sm" onclick="openDeploymentsModal()">⚙️ Manage Pins</button>
                 <button class="btn btn-primary btn-sm" onclick="openAddProject()">+ Add Project</button>
             </div>
@@ -225,11 +241,19 @@
                 <p style="color:var(--text-secondary);font-size:0.95rem;margin-bottom:1.5rem;font-weight:300">Have an interesting project or a technical problem to solve? Drop me a message and I'll get back to you as soon as possible.</p>
                 <div class="contact-item">
                     <div class="contact-icon">📍</div>
-                    <div class="contact-item-body"><h4>Location</h4><p>Gampaha, Sri Lanka</p></div>
+                    <div class="contact-item-body"><h4>Location</h4><p id="contact-location">Yakkala, Sri Lanka</p></div>
                 </div>
                 <div class="contact-item">
                     <div class="contact-icon">📧</div>
                     <div class="contact-item-body"><h4>Email</h4><p>somidudilan2001@gmail.com</p></div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">📱</div>
+                    <div class="contact-item-body"><h4>Phone</h4><p><a id="contact-phone-link" href="tel:0715480383" style="color:inherit">071-5480383</a></p></div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">🌐</div>
+                    <div class="contact-item-body"><h4>Portfolio</h4><p><a href="https://somidud.github.io" target="_blank" style="color:inherit">somidud.github.io</a></p></div>
                 </div>
                 <div class="contact-item">
                     <div class="contact-icon">💼</div>
@@ -288,94 +312,87 @@
 <!-- FOOTER -->
 <footer>
     <div class="container">
-        <p>© 2026 Somidu Dilankara — Built with ❤️ &amp; lots of ☕</p>
+        <p>© 2026 R. D. Somidu Dilankara Ranasinghe — Built with ❤️ &amp; lots of ☕</p>
         <div class="footer-tip">
             <span class="footer-key">Ctrl</span> + <span class="footer-key">`</span> — New Terminal &nbsp;|&nbsp;
-            <span class="footer-key">Ctrl</span>+<span class="footer-key">Shift</span>+<span class="footer-key">A</span> — Admin Login Tip
+            <span class="footer-key">Ctrl</span>+<span class="footer-key">Shift</span>+<span class="footer-key">A</span> — Admin Login Tip &nbsp;|&nbsp; ↑↑↓↓←→←→BA — ???
         </div>
     </div>
 </footer>
 
 <!-- ============================================================
-     CHATBOT CHARACTER — Hermione Granger Animated Avatar
+     CHATBOT CHARACTER — MMM (male full-body avatar in a coat)
 ============================================================ -->
-<div id="chat-char-widget" onclick="toggleChat()" aria-label="Open Hermione AI Assistant" role="button" tabindex="0" title="Chat with Hermione — AI Assistant">
+<div id="chat-char-widget" onclick="toggleChat()" aria-label="Open MMM, the AI portfolio guide" role="button" tabindex="0" title="Chat with MMM — AI Portfolio Guide">
     <!-- Speech bubble -->
     <div id="char-speech-bubble" class="char-speech-bubble">
         <span id="char-bubble-text">Hi! Ask me anything 👋</span>
     </div>
-    <!-- Full-body Hermione avatar (SVG with embedded animations) -->
+    <!-- Full-body MMM avatar (SVG with embedded animations) -->
     <div class="char-body-wrap">
         <div class="char-status-ring"></div>
-        <!-- Use <object> so the SVG's internal CSS animations run -->
-        <object id="char-svg-obj" type="image/svg+xml" data="hermione_avatar.svg"
-                aria-label="Hermione AI Assistant Character"
+        <object id="char-svg-obj" type="image/svg+xml" data="kavi_avatar.svg"
+                aria-label="MMM AI Assistant Character"
                 style="width:100%;height:100%;pointer-events:none;">
-            <!-- Inline fallback if object fails -->
-            <img src="hermione_avatar.svg" alt="Hermione" style="width:100%;height:100%;object-fit:contain;object-position:bottom;">
+            <img src="kavi_avatar.svg" alt="MMM" style="width:100%;height:100%;object-fit:contain;object-position:bottom;">
         </object>
     </div>
     <div class="char-pulse-ring"></div>
 </div>
 
 <!-- Chatbot Panel -->
-<div id="chat-panel" role="dialog" aria-label="Hermione AI Assistant">
+<div id="chat-panel" role="dialog" aria-label="MMM AI Assistant">
     <div class="chat-header">
         <div class="chat-avatar-container" style="overflow:visible;width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#3a1a55,#1a1030);border:2px solid rgba(0,245,255,0.3);flex-shrink:0;">
-            <!-- Hermione portrait bust - inline SVG -->
+            <!-- MMM portrait bust - inline SVG -->
             <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" width="48" height="48" style="border-radius:50%">
                 <defs>
-                    <radialGradient id="cpSkin" cx="45%" cy="38%" r="60%">
-                        <stop offset="0%" stop-color="#fde8cc"/>
-                        <stop offset="100%" stop-color="#e8c8a0"/>
+                    <radialGradient id="kvSkin" cx="45%" cy="38%" r="65%">
+                        <stop offset="0%" stop-color="#d9a273"/>
+                        <stop offset="100%" stop-color="#b57d51"/>
                     </radialGradient>
-                    <clipPath id="cpCircle"><circle cx="30" cy="30" r="30"/></clipPath>
+                    <clipPath id="kvCircle"><circle cx="30" cy="30" r="30"/></clipPath>
                 </defs>
-                <g clip-path="url(#cpCircle)">
-                    <!-- Background -->
+                <g clip-path="url(#kvCircle)">
                     <rect x="0" y="0" width="60" height="60" fill="#1a1030"/>
-                    <!-- Robe/shoulders -->
-                    <path d="M 5 55 Q 8 40 20 38 Q 30 36 40 38 Q 52 40 55 55 Z" fill="#141416"/>
-                    <!-- White shirt collar -->
-                    <path d="M 22 38 L 20 44 L 30 42 Z" fill="#f0f0f5"/>
-                    <path d="M 38 38 L 40 44 L 30 42 Z" fill="#f0f0f5"/>
-                    <!-- Tie hint -->
-                    <path d="M 28 40 L 27.5 50 L 30 53 L 32.5 50 L 32 40 Z" fill="#8b0000"/>
-                    <line x1="28" y1="43" x2="32" y2="41" stroke="#d4a017" stroke-width="1.5"/>
-                    <line x1="27.8" y1="46.5" x2="32" y2="44.5" stroke="#d4a017" stroke-width="1.5"/>
-                    <!-- Cardigan V neck -->
-                    <path d="M 18 38 Q 20 48 30 50 Q 40 48 42 38 Z" fill="#2a2a30" opacity="0.6"/>
-                    <!-- Bushy hair back -->
-                    <ellipse cx="12" cy="26" rx="10" ry="16" fill="#b07008" opacity="0.85"/>
-                    <ellipse cx="48" cy="26" rx="10" ry="16" fill="#b07008" opacity="0.85"/>
-                    <path d="M 14 18 Q 18 4 30 2 Q 42 4 46 18 Q 38 8 30 7 Q 22 8 14 18 Z" fill="#8a5506"/>
-                    <path d="M 15 22 Q 19 6 30 4 Q 41 6 45 22 Q 38 10 30 9 Q 22 10 15 22 Z" fill="#c8860a"/>
+                    <!-- Coat shoulders -->
+                    <path d="M0 60 Q4 42 22 40 L38 40 Q56 42 60 60 Z" fill="#b98355"/>
+                    <path d="M20 40 L12 60 L24 60 L29 46 Z" fill="#a8764b"/>
+                    <path d="M40 40 L48 60 L36 60 L31 46 Z" fill="#a8764b"/>
+                    <!-- Tee -->
+                    <path d="M24 40 L30 56 L36 40 Z" fill="#111827"/>
+                    <!-- Scarf -->
+                    <path d="M19 38 L30 48 L41 38 L42 43 L30 53 L18 43 Z" fill="#7b2fff"/>
                     <!-- Neck -->
-                    <rect x="25" y="33" width="10" height="8" rx="3" fill="url(#cpSkin)"/>
-                    <!-- Head / face -->
-                    <ellipse cx="30" cy="23" rx="16" ry="18" fill="url(#cpSkin)"/>
-                    <!-- Hair front/bangs over forehead -->
-                    <path d="M 16 20 Q 18 10 30 8 Q 42 10 44 20 Q 36 14 30 13 Q 24 14 16 20 Z" fill="#b07010"/>
-                    <!-- Eyebrows -->
-                    <path d="M 19 19 Q 23 17 26 19" stroke="#7a4808" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-                    <path d="M 34 19 Q 37 17 41 19" stroke="#7a4808" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-                    <!-- Left eye -->
-                    <ellipse cx="23" cy="23" rx="4.5" ry="4" fill="white"/>
-                    <circle cx="23" cy="23" r="2.8" fill="#3a1800"/>
-                    <circle cx="23" cy="23" r="1.5" fill="#0a0500"/>
-                    <circle cx="24" cy="21.8" r="1" fill="white"/>
-                    <!-- Right eye -->
-                    <ellipse cx="37" cy="23" rx="4.5" ry="4" fill="white"/>
-                    <circle cx="37" cy="23" r="2.8" fill="#3a1800"/>
-                    <circle cx="37" cy="23" r="1.5" fill="#0a0500"/>
-                    <circle cx="38" cy="21.8" r="1" fill="white"/>
-                    <!-- Nose -->
-                    <path d="M 28.5 27 Q 30 30 31.5 27" stroke="#d0a080" stroke-width="0.8" fill="none"/>
-                    <!-- Smile -->
-                    <path d="M 25 33 Q 30 37 35 33" stroke="#b07060" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-                    <!-- Side hair strands -->
-                    <path d="M 15 25 Q 12 32 14 39" stroke="#c8860a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                    <path d="M 45 25 Q 48 32 46 39" stroke="#c8860a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <rect x="26" y="31" width="8" height="10" rx="3" fill="#b57d51"/>
+                    <g class="kavi-head-group">
+                        <!-- Ears -->
+                        <ellipse cx="16" cy="23" rx="2" ry="3.2" fill="#b57d51"/>
+                        <ellipse cx="44" cy="23" rx="2" ry="3.2" fill="#b57d51"/>
+                        <!-- Face -->
+                        <ellipse cx="30" cy="22" rx="14" ry="16" fill="url(#kvSkin)"/>
+                        <!-- Hair -->
+                        <path d="M15.5 22 Q13 3 30 3.5 Q48 3 44.5 22 Q43 12 36 10 Q30 14 24 10 Q17 13 15.5 22 Z" fill="#17100d"/>
+                        <path d="M22 8 Q31 -1 41 9 Q32 6 22 8 Z" fill="#17100d"/>
+                        <!-- Brows -->
+                        <path d="M19.5 17.5 Q24 15 27.5 17.5" stroke="#17100d" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+                        <path d="M32.5 17.5 Q36 15 40.5 17.5" stroke="#17100d" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+                        <!-- Eyes -->
+                        <g class="kavi-eyes">
+                            <ellipse cx="24" cy="22.5" rx="3.2" ry="2.8" fill="#fff"/><circle cx="24.4" cy="22.5" r="1.8" fill="#2a1608"/>
+                            <ellipse cx="36" cy="22.5" rx="3.2" ry="2.8" fill="#fff"/><circle cx="36.4" cy="22.5" r="1.8" fill="#2a1608"/>
+                        </g>
+                        <!-- Glasses -->
+                        <circle cx="24" cy="22.5" r="5.6" fill="none" stroke="#0b1020" stroke-width="1.3"/>
+                        <circle cx="36" cy="22.5" r="5.6" fill="none" stroke="#0b1020" stroke-width="1.3"/>
+                        <path d="M29.6 22 Q30 21 30.4 22" stroke="#0b1020" stroke-width="1.2" fill="none"/>
+                        <!-- Nose -->
+                        <path d="M29 26 Q30 29 31.6 27" stroke="#8d5b36" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                        <!-- Stubble -->
+                        <path d="M18 30 Q30 41 42 30 Q40 36 30 37 Q20 36 18 30 Z" fill="#17100d" opacity="0.2"/>
+                        <!-- Smile -->
+                        <path class="kavi-mouth" d="M25.5 31.5 Q30 35 34.5 31.5 Z" fill="#fff" stroke="#5c2f1c" stroke-width="1" stroke-linejoin="round"/>
+                    </g>
                 </g>
                 <!-- Online status dot -->
                 <circle cx="46" cy="46" r="6" fill="#00ff88" stroke="#1a1030" stroke-width="2"/>
@@ -383,20 +400,30 @@
         </div>
 
         <div class="chat-header-info">
-            <div class="chat-name">Hermione</div>
+            <div class="chat-name">MMM</div>
             <div class="chat-status">
                 <span class="chat-status-dot"></span>
-                Personal AI Assistant
+                AI Portfolio Guide
             </div>
         </div>
         <button class="chat-close" onclick="toggleChat()">✕</button>
     </div>
     <div id="chat-messages">
         <div class="msg assistant">
-            <div class="msg-bubble">Hello! 👋 I'm <strong>Hermione</strong>, Somidu Dilankara's personal AI assistant. I can tell you about his skills, education, projects, and how to get in touch. What would you like to know?</div>
+            <div class="msg-bubble">Hey! 👋 I'm <strong>MMM</strong>, Somidu's AI portfolio guide. I answer straight from his CV — projects, skills, experience, education and contact details. What would you like to know?
+                <div class="kavi-chips">
+                    <button type="button" class="kavi-chip" onclick="askKavi('Show his projects')">Projects</button>
+                    <button type="button" class="kavi-chip" onclick="askKavi('What are his skills?')">Skills</button>
+                    <button type="button" class="kavi-chip" onclick="askKavi('Work experience')">Experience</button>
+                    <button type="button" class="kavi-chip" onclick="askKavi('Education')">Education</button>
+                    <button type="button" class="kavi-chip" onclick="askKavi('Contact details')">Contact</button>
+                    <button type="button" class="kavi-chip" onclick="askKavi('Generate CV')">CV</button>
+                    <button type="button" class="kavi-chip" onclick="askKavi('Tell me a joke')">😄 Joke</button>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="chat-disclaimer">Contextual AI — powered by Somidu's background data</div>
+    <div class="chat-disclaimer">Answers are generated from Somidu's CV data</div>
     <div class="chat-input-area">
         <textarea id="chat-input" placeholder="Ask about skills, projects..." rows="1"></textarea>
         <button id="chat-send" onclick="sendChatMessage()">
@@ -491,50 +518,6 @@
     </div>
 </div>
 
-<!-- CV GENERATOR MODAL -->
-<div id="cv-modal-overlay">
-    <div id="cv-modal-box">
-        <div class="modal-header">
-            <span class="modal-title">✨ AI CV Generator</span>
-            <button class="modal-close" onclick="closeCvModal()">✕</button>
-        </div>
-        <div style="padding:2rem">
-            <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1.5rem">Enter the role or position you're applying for. The AI will tailor your CV accordingly.</p>
-            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.25rem">
-                <button class="cv-chip" onclick="selectChip(this,'Flutter Mobile Developer')">📱 Mobile Dev</button>
-                <button class="cv-chip" onclick="selectChip(this,'Full-Stack Web Developer')">🌐 Full-Stack</button>
-                <button class="cv-chip" onclick="selectChip(this,'IoT Systems Engineer')">📡 IoT Engineer</button>
-                <button class="cv-chip" onclick="selectChip(this,'React Frontend Developer')">⚛️ React Dev</button>
-                <button class="cv-chip" onclick="selectChip(this,'Software Internship')">💼 Internship</button>
-                <button class="cv-chip" onclick="selectChip(this,'Java Backend Developer')">☕ Java Dev</button>
-            </div>
-            <div class="form-group" style="margin-bottom:1.25rem">
-                <label style="font-family:var(--font-mono);font-size:0.78rem;color:var(--text-secondary);margin-bottom:0.4rem;display:block">OR TYPE CUSTOM ROLE</label>
-                <input type="text" id="cv-role-input" placeholder="e.g. Junior Software Engineer at Google" style="width:100%;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:0.8rem 1rem;color:var(--text-primary);font-size:0.95rem;outline:none;transition:border-color 0.2s">
-            </div>
-            <div id="cv-progress-bar" style="height:3px;background:var(--border);border-radius:2px;margin-bottom:0.75rem;overflow:hidden;display:none">
-                <div id="cv-progress-fill" style="height:100%;background:var(--accent-gradient);width:0%;transition:width 0.4s ease;border-radius:2px"></div>
-            </div>
-            <p id="cv-status" style="font-family:var(--font-mono);font-size:0.78rem;color:var(--accent);min-height:1.2em;margin-bottom:1.25rem"></p>
-            <button class="btn btn-primary" id="cv-gen-btn" onclick="generateCV()" style="width:100%;justify-content:center;margin-bottom:1rem">
-                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                Generate &amp; Download PDF
-            </button>
-            <div id="cv-download-zone" style="display:none;flex-direction:column;gap:0.75rem">
-                <div style="background:rgba(0,245,255,0.06);border:1px solid var(--border-bright);border-radius:var(--radius);padding:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem">
-                    <div>
-                        <div style="font-weight:700;font-size:0.9rem">CV Ready! 🎉</div>
-                        <div id="cv-download-label" style="font-family:var(--font-mono);font-size:0.72rem;color:var(--text-muted)">Optimized for your role</div>
-                    </div>
-                    <button class="btn btn-primary btn-sm" id="cv-download-btn" onclick="downloadGeneratedCV()">
-                        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                        Download PDF
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- EDIT PROJECT MODAL -->
 <div id="edit-project-overlay">
@@ -563,6 +546,9 @@
 <!-- TOAST CONTAINER -->
 <div id="toast-container"></div>
 
+<script src="cv-data.js"></script>
 <script src="app.js"></script>
+<script src="kavi.js"></script>
+<script src="cv-studio.js"></script>
 </body>
 </html>
