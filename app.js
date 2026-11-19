@@ -2,7 +2,7 @@
 // ============================================================
 // CONSTANTS & STATE
 // ============================================================
-const MAX_PINNED = 7;
+const MAX_PINNED = 6;
 let ALL_PROJECTS = [];
 let pinnedProjects = [];
 let MASTER_CV_DATA = {};
@@ -52,7 +52,7 @@ function projectsFromCV() {
     return (MASTER_CV_DATA.projects || []).map((p, i) => ({
         id: p.id ?? (Date.now() + i), title: p.name || p.title || 'Untitled', category: p.category || '',
         description: p.description || '', tags: p.technologies || p.tags || [],
-        youtubeUrl: p.youtubeUrl || '', github: p.github || 'https://github.com/somidud', live: p.live || '#',
+        youtubeUrl: p.youtubeUrl || '', orient: p.orient || 'auto', github: p.github || 'https://github.com/somidud', live: p.live || '#',
         userAdded: !!p.userAdded
     }));
 }
@@ -61,7 +61,7 @@ function projectsFromCV() {
 function persistProjectsToCV() {
     MASTER_CV_DATA.projects = ALL_PROJECTS.map(p => ({
         id: p.id, name: p.title, category: p.category, description: p.description, technologies: p.tags,
-        youtubeUrl: p.youtubeUrl, github: p.github, live: p.live, userAdded: !!p.userAdded
+        youtubeUrl: p.youtubeUrl, orient: p.orient || 'auto', github: p.github, live: p.live, userAdded: !!p.userAdded
     }));
     saveCVOverride();
 }
@@ -364,25 +364,51 @@ function renderSkillsGrid() {
 // ============================================================
 // PROJECT CARDS
 // ============================================================
-function buildProjectCard(p) {
+// ---------- VIDEO LINKS (YouTube / Google Drive / TikTok / Vimeo / MP4) ----------
+function parseVideo(raw, orient) {
+    const url = String(raw || '').trim();
+    if (!url) return null;
+    let m, kind = 'iframe', src = '', auto = 'landscape';
+    if ((m = url.match(/(?:youtube\.com\/shorts\/)([\w-]{6,})/i))) { src = 'https://www.youtube.com/embed/' + m[1] + '?rel=0'; auto = 'portrait'; }
+    else if ((m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|live\/|v\/)|youtube-nocookie\.com\/embed\/)([\w-]{6,})/i))) { src = 'https://www.youtube.com/embed/' + m[1] + '?rel=0'; }
+    else if ((m = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:.*&)?id=)([\w-]+)/i))) { src = 'https://drive.google.com/file/d/' + m[1] + '/preview'; }
+    else if ((m = url.match(/tiktok\.com\/(?:@[\w.\-]+\/video\/|embed\/(?:v2\/)?|v\/)(\d{8,})/i))) { src = 'https://www.tiktok.com/embed/v2/' + m[1]; auto = 'portrait'; }
+    else if ((m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/i))) { src = 'https://player.vimeo.com/video/' + m[1]; }
+    else if (/\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url) && /^https?:/i.test(url)) { kind = 'video'; src = url; }
+    else return { kind: 'link', src: url, orient: 'landscape' };
+    const o = ['landscape', 'portrait', 'square'].includes(orient) ? orient : auto;
+    return { kind, src, orient: o };
+}
+
+function buildVideoMedia(p) {
+    const v = parseVideo(p.youtubeUrl, p.orient);
+    const ar = { landscape: ['16 / 9', 1.7778], portrait: ['9 / 16', 0.5625], square: ['1 / 1', 1] };
+    if (!v || v.kind === 'link') {
+        const link = v ? `<a href="${esc(v.src)}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm" style="margin-top:.4rem">Watch video ↗</a>` : '';
+        return `<div class="card-media card-media-empty"><div class="video-placeholder">
+            <div class="yt-play-icon">▶</div>
+            <p style="font-size:0.72rem;color:var(--text-muted);font-family:var(--font-mono)">${v ? 'Link can\'t be embedded' : 'Preview unavailable'}</p>${link}</div></div>`;
+    }
+    const [css, n] = ar[v.orient];
+    const inner = v.kind === 'video'
+        ? `<video src="${esc(v.src)}" controls playsinline preload="metadata" onloadedmetadata="if(this.videoWidth){var f=this.parentElement;f.style.setProperty('--ar',this.videoWidth+' / '+this.videoHeight);f.style.setProperty('--arn',this.videoWidth/this.videoHeight);}"></video>`
+        : `<iframe src="${esc(v.src)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen title="${esc(p.title)} demo"></iframe>`;
+    return `<div class="card-media card-media-video"><div class="vid-frame" style="--ar:${css};--arn:${n}">${inner}</div></div>`;
+}
+
+function buildProjectCard(p, ctx = '') {
     const isPinned = pinnedProjects.includes(p.id);
     const tags = p.tags.map(t => `<span class="tag">${t}</span>`).join('');
-    const isValidYT = p.youtubeUrl && p.youtubeUrl.startsWith('https://');
-    const media = isValidYT
-        ? `<iframe src="${p.youtubeUrl}" allow="accelerometer;autoplay;encrypted-media;gyroscope" allowfullscreen title="${p.title} demo"></iframe>`
-        : `<div class="video-placeholder">
-            <div class="yt-play-icon">▶</div>
-            <p style="font-size:0.72rem;color:var(--text-muted);font-family:var(--font-mono)">Preview unavailable</p>
-           </div>`;
+    const media = buildVideoMedia(p);
     const editBtn = adminAuthenticated
         ? `<button class="proj-edit-btn" onclick="openEditProject(${p.id})" title="Edit project">✏️</button>` : '';
     const deleteBtn = adminAuthenticated
         ? `<button class="proj-delete-btn" onclick="deleteProject(${p.id})" title="Delete">🗑</button>` : '';
     const pinBtn = adminAuthenticated
-        ? `<button id="card-pin-${p.id}" class="pin-btn ${isPinned ? 'pinned' : ''}" onclick="togglePin(${p.id})">${isPinned ? '⭐ Pinned' : '☆ Pin'}</button>` : '';
+        ? `<button id="${ctx}card-pin-${p.id}" class="pin-btn ${isPinned ? 'pinned' : ''}" onclick="togglePin(${p.id})">${isPinned ? '⭐ Pinned' : '☆ Pin'}</button>` : '';
     return `
-        <div class="project-card" id="pcard-${p.id}">
-            <div class="card-media">${media}</div>
+        <div class="project-card" id="${ctx}pcard-${p.id}">
+            ${media}
             <div class="card-body">
                 <span class="card-category">${p.category}</span>
                 <h3>${p.title}${p.userAdded ? '<span class="custom-badge">Custom</span>' : ''}</h3>
@@ -427,6 +453,22 @@ function renderPinnedGrid() {
     grid.innerHTML = pinned.map(p => buildProjectCard(p)).join('');
     const sub = document.getElementById('pinned-subtitle');
     if (sub) sub.textContent = `${pinned.length} pinned from my project library`;
+    renderAllProjects();
+}
+
+let allProjectsOpen = false;
+function renderAllProjects() {
+    const grid = document.getElementById('all-projects-grid');
+    const btn = document.getElementById('all-projects-btn');
+    if (btn) btn.innerHTML = allProjectsOpen ? '▲ Hide All Projects' : `📂 View All Projects (${ALL_PROJECTS.length})`;
+    if (!grid) return;
+    grid.hidden = !allProjectsOpen;
+    grid.innerHTML = allProjectsOpen ? ALL_PROJECTS.map(p => buildProjectCard(p, 'all-')).join('') : '';
+}
+function toggleAllProjects() {
+    allProjectsOpen = !allProjectsOpen;
+    renderAllProjects();
+    if (allProjectsOpen) document.getElementById('all-projects-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function renderModalGrid() {
@@ -509,7 +551,8 @@ function submitNewProject() {
     const live = document.getElementById('ap-live')?.value.trim() || '#';
     const shouldPin = document.getElementById('ap-pin')?.checked;
     const newId = Date.now();
-    const proj = { id: newId, title, category, description, tags, youtubeUrl, github, live, userAdded: true };
+    const orient = document.getElementById('ap-orient')?.value || 'auto';
+    const proj = { id: newId, title, category, description, tags, youtubeUrl, orient, github, live, userAdded: true };
     ALL_PROJECTS.push(proj);
     saveUserProjects(); persistProjectsToCV();
     if (shouldPin && pinnedProjects.length < MAX_PINNED) { pinnedProjects.push(newId); savePinnedProjects(pinnedProjects); }
@@ -544,6 +587,7 @@ function openEditProject(id) {
     document.getElementById('ep-description').value = p.description || '';
     document.getElementById('ep-tags').value = (p.tags || []).join(', ');
     document.getElementById('ep-youtube').value = p.youtubeUrl || '';
+    const eo = document.getElementById('ep-orient'); if (eo) eo.value = p.orient || 'auto';
     document.getElementById('ep-github').value = p.github || '';
     document.getElementById('ep-live').value = p.live || '';
     const overlay = document.getElementById('edit-project-overlay');
@@ -573,7 +617,8 @@ function saveEditProject() {
     const idx = ALL_PROJECTS.findIndex(p => p.id === id);
     if (idx === -1) { showToast('⚠️ Project not found!', 'warning'); return; }
     const wasUserAdded = ALL_PROJECTS[idx].userAdded;
-    ALL_PROJECTS[idx] = { id, title, category, description, tags, youtubeUrl, github, live, userAdded: wasUserAdded };
+    const orient = document.getElementById('ep-orient')?.value || 'auto';
+    ALL_PROJECTS[idx] = { id, title, category, description, tags, youtubeUrl, orient, github, live, userAdded: wasUserAdded };
     if (wasUserAdded) saveUserProjects();
     persistProjectsToCV();
     closeEditProject();
