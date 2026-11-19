@@ -113,9 +113,10 @@
         <div class="hero-photo">
             <div class="hero-photo-ring">
                 <div class="hero-photo-inner">
-                    <img src="SomiduD.jpeg" alt="Somidu Dilankara" onerror="this.style.display='none'">
+                    <div id="hero-slides"><img class="hero-slide active" src="SomiduD.jpeg" alt="Somidu Dilankara" onerror="this.style.display='none'"></div>
                 </div>
             </div>
+            <div class="hero-dots" id="hero-dots" aria-hidden="true"></div>
             <div class="hero-photo-glow"></div>
         </div>
     </div>
@@ -217,6 +218,8 @@
             </div>
             <div id="admin-deploy-toolbar">
                 <button class="btn btn-outline btn-sm" onclick="openCvEditor()">📝 Edit CV Data</button>
+                <button class="btn btn-outline btn-sm" onclick="openPhotoManager()">🖼️ Profile Photos</button>
+                <button class="btn btn-primary btn-sm" id="publish-btn" onclick="openPublish()">☁️ Publish to All Devices</button>
                 <button class="btn btn-outline btn-sm" onclick="openDeploymentsModal()">⚙️ Manage Pins</button>
                 <button class="btn btn-primary btn-sm" onclick="openAddProject()">+ Add Project</button>
             </div>
@@ -557,5 +560,6 @@
 <script src="app.js"></script>
 <script src="kavi.js"></script>
 <script src="cv-studio.js"></script>
+<script src="publish.js"></script>
 </body>
 </html>

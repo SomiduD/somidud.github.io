@@ -64,6 +64,12 @@ function cvsTailor(role) {
 }
 
 // ---------- document builder ----------
+function cvsProjLinks(pr, fs, color) {
+    const generic = 'https://github.com/somidud';
+    const list = [pr.github && pr.github !== generic && ['GitHub', pr.github], pr.live && pr.live !== '#' && ['Live demo', pr.live], pr.youtubeUrl && ['Video', pr.youtubeUrl]].filter(Boolean);
+    if (!list.length) return '';
+    return `<div style="font-size:${fs - 1}px;margin-top:1px">${list.map(([l, u]) => `<a href="${esc(u)}" style="color:${color};text-decoration:underline">${l} ↗</a>`).join(' &nbsp;·&nbsp; ')}</div>`;
+}
 function cvsBuildHTML() {
     const d = MASTER_CV_DATA, p = d.personal || {}, a = CVS.accent;
     const tpl = CVS.template, compact = CVS.size === 'compact';
@@ -72,7 +78,10 @@ function cvsBuildHTML() {
     const h2 = (t) => tpl === 'classic'
         ? `<h2 style="font-size:${fs + 1}px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#111;border-bottom:1.5px solid #111;padding-bottom:2px;margin:${compact ? 12 : 16}px 0 6px">${t}</h2>`
         : `<h2 style="font-size:${fs - 1}px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:${a};border-bottom:1px solid #e5e7eb;padding-bottom:3px;margin:${compact ? 12 : 18}px 0 7px">${t}</h2>`;
-    const contact = [p.phone, p.email, p.location, p.portfolio, p.linkedin, p.github].filter(Boolean).map(esc);
+    const U = s => /^(https?:|mailto:|tel:)/i.test(s) ? s : 'https://' + s;
+    const L = (label, href) => `<a href="${esc(href)}" style="color:inherit;text-decoration:none">${esc(label)}</a>`;
+    const contact = [p.phone && L(p.phone, 'tel:' + p.phone.replace(/[^+\d]/g, '')), p.email && L(p.email, 'mailto:' + p.email), p.location && esc(p.location),
+        p.portfolio && L(p.portfolio, U(p.portfolio)), p.linkedin && L(p.linkedin, U(p.linkedin)), p.github && L(p.github, U(p.github))].filter(Boolean);
     const align = tpl === 'classic' ? 'center' : 'left';
     let html = `<div class="cv-doc" style="width:794px;box-sizing:border-box;padding:${compact ? 28 : 36}px 44px;background:#fff;color:#111827;font-family:${font};font-size:${fs}px;line-height:1.5;text-align:left">`;
     html += `<div style="text-align:${align};${tpl === 'classic' ? '' : `border-left:6px solid ${a};padding-left:14px;`}margin-bottom:6px">
@@ -97,7 +106,7 @@ function cvsBuildHTML() {
     if (CVS.sec.projects) {
         const byId = Object.fromEntries((d.projects || []).map(x => [x.id, x]));
         const items = CVS.projOrder.filter(id => CVS.proj.has(id) && byId[id]).map(id => byId[id]);
-        if (items.length) html += h2('Key Projects') + items.map(pr => `<div style="margin-bottom:${compact ? 7 : 10}px;page-break-inside:avoid"><div><b>${esc(pr.name)}</b> <span style="color:#6b7280;font-size:${fs - 1}px">| ${esc(pr.category)}</span></div><div style="color:#374151">${esc(pr.description)}</div><div style="color:${tpl === 'classic' ? '#111' : a};font-size:${fs - 1}px;margin-top:1px"><b>Tech:</b> ${(pr.technologies || []).map(esc).join(', ')}</div></div>`).join('');
+        if (items.length) html += h2('Key Projects') + items.map(pr => `<div style="margin-bottom:${compact ? 7 : 10}px;page-break-inside:avoid"><div><b>${esc(pr.name)}</b> <span style="color:#6b7280;font-size:${fs - 1}px">| ${esc(pr.category)}</span></div><div style="color:#374151">${esc(pr.description)}</div><div style="color:${tpl === 'classic' ? '#111' : a};font-size:${fs - 1}px;margin-top:1px"><b>Tech:</b> ${(pr.technologies || []).map(esc).join(', ')}</div>${cvsProjLinks(pr, fs, tpl === 'classic' ? '#111' : a)}</div>`).join('');
     }
     if (CVS.sec.education) {
         const items = (d.education || []).filter((_, i) => CVS.edu.has(i));
@@ -277,6 +286,9 @@ async function cvsDownloadPDF() {
             const canvas = await html2canvas(pages[i], { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false, width: CVS_PAGE_W, height: CVS_PAGE_H, windowWidth: CVS_PAGE_W });
             if (i) pdf.addPage('a4', 'portrait');
             pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297);
+            // make links clickable in the PDF
+            const pr0 = pages[i].getBoundingClientRect(), k = 210 / CVS_PAGE_W;
+            pages[i].querySelectorAll('a[href]').forEach(a => { const r = a.getBoundingClientRect(); if (r.width) pdf.link((r.left - pr0.left) * k, (r.top - pr0.top) * k, r.width * k, r.height * k, { url: a.href }); });
         }
         pdf.save(cvsFileBase() + '.pdf');
         showToast('📄 CV downloaded (' + pages.length + (pages.length > 1 ? ' pages)' : ' page)'), 'success'); cvsStatus('✔ PDF saved');
@@ -365,6 +377,7 @@ function cveCollect() {
     const skills = {};
     CVE.skills.forEach(s => { const c = s.cat.trim(); const l = s.items.split(',').map(x => x.trim()).filter(Boolean); if (c && l.length) skills[c] = l; });
     return {
+        pinned: MASTER_CV_DATA.pinned, profile: MASTER_CV_DATA.profile,
         personal: { ...CVE.personal },
         summary: CVE.summary.trim(),
         skills,
@@ -381,7 +394,7 @@ function cveSave() {
     saveUserProjects();
     closeCvEditor();
     if (document.getElementById('cvs-overlay')?.classList.contains('open')) { CVS = cvsDefaultState(); cvsRenderControls(); cvsRenderPreview(); }
-    showToast('✅ CV data saved — site, chatbot & CV updated!', 'success');
+    showToast('✅ Saved on this device — click ☁️ Publish to show it on all devices', 'success');
 }
 function cveExport() {
     const url = URL.createObjectURL(new Blob([JSON.stringify(cveCollect(), null, 2)], { type: 'application/json' }));

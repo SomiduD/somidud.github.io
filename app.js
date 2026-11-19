@@ -46,7 +46,11 @@ function loadCVOverride() {
     try { const s = localStorage.getItem(CV_STORE_KEY); if (s) return JSON.parse(s); } catch (e) { }
     return null;
 }
-function saveCVOverride() { localStorage.setItem(CV_STORE_KEY, JSON.stringify(MASTER_CV_DATA)); }
+function saveCVOverride() {
+    localStorage.setItem(CV_STORE_KEY, JSON.stringify(MASTER_CV_DATA));
+    localStorage.setItem('cvDirty', '1');
+    if (typeof updatePublishBadge === 'function') updatePublishBadge();
+}
 
 function projectsFromCV() {
     return (MASTER_CV_DATA.projects || []).map((p, i) => ({
@@ -75,6 +79,7 @@ function refreshSiteFromCV() {
     renderExperience();
     renderSkillsGrid();
     renderAboutBits();
+    if (typeof initProfileSlideshow === 'function') initProfileSlideshow();
 }
 
 async function initMasterData() {
@@ -126,6 +131,7 @@ function renderExperience() {
 // PINNING STATE
 // ============================================================
 function loadPinnedProjects() {
+    if (Array.isArray(MASTER_CV_DATA.pinned) && MASTER_CV_DATA.pinned.length) return MASTER_CV_DATA.pinned;
     try {
         const saved = localStorage.getItem('pinnedProjects');
         if (saved) {
@@ -136,7 +142,11 @@ function loadPinnedProjects() {
     return ALL_PROJECTS.slice(0, 6).map(p => p.id);
 }
 
-function savePinnedProjects(arr) { localStorage.setItem('pinnedProjects', JSON.stringify(arr)); }
+function savePinnedProjects(arr) {
+    localStorage.setItem('pinnedProjects', JSON.stringify(arr));
+    MASTER_CV_DATA.pinned = [...arr];
+    saveCVOverride();
+}
 function saveUserProjects() { localStorage.setItem('userProjects', JSON.stringify(ALL_PROJECTS.filter(p => p.userAdded))); }
 function loadUserProjects() {
     try {
